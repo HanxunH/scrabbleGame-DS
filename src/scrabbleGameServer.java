@@ -22,7 +22,7 @@ public class scrabbleGameServer {
         public InetAddress userIP;
         public String userIPString;
         public Socket socket;
-
+        public boolean isLogin = false;
     }
 
     /*
@@ -147,7 +147,32 @@ public class scrabbleGameServer {
         }
 
         public void clientHandler() {
-            
+            try{
+                /* Get Data From Client */
+                DataInputStream inputStream = new DataInputStream(this.clientObject.socket.getInputStream());
+                ByteArrayOutputStream data = new ByteArrayOutputStream();
+                byte[] by = new byte[2048];
+                int n;
+                while ((n = inputStream.read(by)) != -1) {
+                    data.write(by, 0, n);
+                }
+                String strInputstream = new String(data.toByteArray());
+                this.clientObject.socket.shutdownInput();
+                data.close();
+
+                /* JSON Parsing */
+                JSONObject json = new JSONObject(strInputstream);
+
+                /*
+                * JSON FORMAT
+                * operation:
+                */
+
+
+            }catch (Exception e){
+
+            }
+
         }
     }
 
