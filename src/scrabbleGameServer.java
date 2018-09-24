@@ -14,6 +14,14 @@ import java.io.*;
 
 public class scrabbleGameServer {
     /*
+     * Operation Action
+     */
+    enum operationAction{
+        ADDPLAYER, CREATEROOM, LISTROOM, JOINROOM, READY, ADDCHAR;
+    }
+
+
+    /*
      * Connected Player Client Class
      */
     public static class connectedPlayerClient{
@@ -23,6 +31,8 @@ public class scrabbleGameServer {
         public String userIPString;
         public Socket socket;
         public boolean isLogin = false;
+        public boolean isInRoom = false;
+        public int roomID = 0;
     }
 
     /*
@@ -33,6 +43,7 @@ public class scrabbleGameServer {
         private int maximumPlayersPerGame = 4;
         public ArrayList<connectedPlayerClient> connectedPlayers = new ArrayList<>();
         public scrabbleGame game;
+        public int id;
         public gameRoom() {
             this.game = new scrabbleGame();
         }
@@ -44,11 +55,13 @@ public class scrabbleGameServer {
     */
     private static int defaultPort = 6666;
     private static int clientCounter = 0;
+    private static int gameRoomCounter = 0;
     private static int minimalPlayersPerGame = 2;
     private static int maximumPlayersPerGame = 4;
     private static orcaLogerHelper loggerHandler = new orcaLogerHelper();
     private static Logger logger = loggerHandler.getLogger();
     private static ArrayList<connectedPlayerClient> clientList = new ArrayList<>();
+    private static ArrayList<gameRoom> gameRoomList = new ArrayList<>();
     private static ServerSocket serverSocket = null;
 
 
@@ -134,6 +147,22 @@ public class scrabbleGameServer {
         clientCounter = n;
     }
 
+    private static synchronized int getRoomCounter() {
+        return gameRoomCounter;
+    }
+
+    private static synchronized void incrementGameRoomCounter(){
+        gameRoomCounter = gameRoomCounter + 1;
+    }
+
+    private static synchronized void decrementGameRoomCounter(){
+        gameRoomCounter = gameRoomCounter - 1;
+    }
+
+    private static synchronized void resetGameRoomCounter(int n){
+        gameRoomCounter = n;
+    }
+
 
     public static class clientHandlerThread implements Runnable {
         connectedPlayerClient clientObject;
@@ -146,31 +175,108 @@ public class scrabbleGameServer {
             clientHandler();
         }
 
+        public void jsonErrorHandler(String errorMessage, int errorCode, Map<String, String> jsonMap){
+            jsonMap.put("response_code", String.valueOf(errorCode));
+            jsonMap.put("error_message", errorMessage);
+        }
+
+
+        public JSONObject clientRequestHandler(JSONObject json){
+            Map<String, String> jsonMap = new HashMap<String, String>();
+            jsonMap.put("response", "true");
+            jsonMap.put("response_code", "200");
+            if(json.has("operation")){
+                try{
+                    String operationRequestString = json.getString("operation");
+                    if(operationRequestString.equals("ADDPLAYER")){
+                        /*
+                        Add a player
+                        */
+                        if(json.has("player_username")){
+                            clientObject.username = json.getString("player_username");
+                            clientObject.isLogin = true;
+                            jsonMap.put("player_id",String.valueOf(clientObject.userID));
+                        }else{
+                            /*
+                            No player_username Key
+                            */
+                            jsonErrorHandler("Please provide player Username", 404, jsonMap);
+                        }
+                    }else if(operationRequestString.equals("CREATEROOM")){
+                        /*
+                        Create a game room
+                         */
+                        if(json.has("player_ID") && json.getInt("player_ID") == clientObject.userID){
+                            gameRoom gameRoom = new gameRoom();
+                            gameRoom.id = getRoomCounter();
+                            incrementGameRoomCounter();
+                            gameRoom.maximumPlayersPerGame = maximumPlayersPerGame;
+                            gameRoom.minimalPlayersPerGame = minimalPlayersPerGame;
+                            gameRoom.connectedPlayers.add(clientObject);
+                            this.clientObject.isInRoom = true;
+                            this.clientObject.roomID = gameRoom.id;
+                            gameRoomList.add(gameRoom);
+                        }else{
+                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                        }
+                    }
+                }catch (Exception e){
+                    jsonErrorHandler(e.getMessage(), 500, jsonMap);
+                }
+
+            }else{
+                // No operation Keyword
+                jsonErrorHandler("No Operation Keyword found in request", 404, jsonMap);
+            }
+
+            /* Respond to Client */
+            JSONObject responseJSON = new JSONObject(jsonMap);
+            return responseJSON;
+        }
+
         public void clientHandler() {
             try{
-                /* Get Data From Client */
-                DataInputStream inputStream = new DataInputStream(this.clientObject.socket.getInputStream());
-                ByteArrayOutputStream data = new ByteArrayOutputStream();
-                byte[] by = new byte[2048];
-                int n;
-                while ((n = inputStream.read(by)) != -1) {
-                    data.write(by, 0, n);
+                while(this.clientObject.socket.isConnected()){
+                    /* Get Data From Client */
+                    DataInputStream inputStream = new DataInputStream(this.clientObject.socket.getInputStream());
+                    ByteArrayOutputStream data = new ByteArrayOutputStream();
+                    byte[] by = new byte[2048];
+                    int n;
+                    while ((n = inputStream.read(by)) != -1) {
+                        data.write(by, 0, n);
+                    }
+                    String strInputstream = new String(data.toByteArray());
+                    this.clientObject.socket.shutdownInput();
+                    data.close();
+
+                    /*
+                        JSON Parsing
+                    */
+                    JSONObject json = new JSONObject(strInputstream);
+
+                    /*
+                        Handle client Request
+                     */
+                    JSONObject responseJson = clientRequestHandler(json);
+                    String responseJSONString = responseJson.toString();
+
+                    /*
+                        Reply Client
+                     */
+                    DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(this.clientObject.socket.getOutputStream()));
+                    outputStream.writeUTF(responseJSONString);
+                    outputStream.flush();
+                    outputStream.close();
                 }
-                String strInputstream = new String(data.toByteArray());
-                this.clientObject.socket.shutdownInput();
-                data.close();
-
-                /* JSON Parsing */
-                JSONObject json = new JSONObject(strInputstream);
-
-                /*
-                * JSON FORMAT
-                * operation:
-                */
-
 
             }catch (Exception e){
+                logger.severe(e.getMessage());
+                synchronized (clientList){
+                    clientList.remove(this.clientObject);
+                }
+                decrementClientCounter();
 
+                logger.info("Remove player ID: " + String.valueOf(this.clientObject.userID));
             }
 
         }
@@ -188,7 +294,9 @@ public class scrabbleGameServer {
                 client.userID = getClientCounter();
                 client.userIP = socket.getInetAddress();
                 client.userIPString = client.userIP.getHostAddress();
-                clientList.add(client);
+                synchronized (clientList){
+                    clientList.add(client);
+                }
                 clientHandlerThread clientThread = new clientHandlerThread(client);
                 clientThread.run();
                 incrementClientCounter();
