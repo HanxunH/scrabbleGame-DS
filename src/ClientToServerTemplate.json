@@ -2,8 +2,11 @@
 {
   "operation": "ADDPLAYER",
   "player_username": "TestUser",
-  "is_login": true
 }
+
+// Response
+{"response_code":"200","player_id":"0","response":"true"}
+
 
 // Create a room
 {
