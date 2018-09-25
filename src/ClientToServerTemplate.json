@@ -1,7 +1,7 @@
 // Add Player
 {
   "operation": "ADDPLAYER",
-  "player_username": "TestUser",
+  "player_username": "TestUser"
 }
 
 // Response
@@ -11,7 +11,7 @@
 // Create a room
 {
   "operation": "CREATEROOM",
-  "player_id": 0,
+  "player_id": 0
 }
 {"response_code":"200","player_id":"0","response":"true","player_room_id":"0"}
 
@@ -29,6 +29,26 @@
   "operation": "LISTROOM",
   "player_id": 0
 }
+{"response_code":"200",
+  "player_id":"0",
+  "response":"true",
+  "room_list": [
+    {
+      "room_id": 0,
+      "room_avaliable_spot" : 3,
+      "room_is_game_started": false
+    },
+    {
+      "room_id": 1,
+      "room_avaliable_spot" : 1,
+      "room_is_game_started": false
+    }
+    {
+      ...
+    }
+  ]
+}
+
 
 // Join a room
 {
@@ -40,7 +60,7 @@
 // Player Ready To Play (has to be in a game room)
 {
   "operation": "READY",
-  "player_id": 0,
+  "player_id": 0
 }
 
 // Add a char at index (has to be in a started game)
