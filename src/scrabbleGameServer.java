@@ -393,13 +393,9 @@ public class scrabbleGameServer {
                     }else{
                         jsonErrorHandler("Operation Not Implemented", 501, jsonMap);
                     }
-                    }else{
-                        jsonErrorHandler("Operation Not Implemented", 501, jsonMap);
-                    }
                 }catch (Exception e){
                     jsonErrorHandler(e.getMessage(), 500, jsonMap);
                 }
-
             }else{
                 // No operation Keyword
                 jsonErrorHandler("No Operation Keyword found in request", 404, jsonMap);
