@@ -46,6 +46,7 @@ public class scrabbleGameServer {
         public ArrayList<connectedPlayerClient> connectedPlayers = new ArrayList<>();
         public scrabbleGame game;
         public int id;
+        public boolean roomIsGameStarted = false;
         public gameRoom() {
             this.game = new scrabbleGame();
         }
@@ -325,10 +326,73 @@ public class scrabbleGameServer {
                         }
                     }else if(operationRequestString.equals("LISTROOM")){
                         // TODO: List all room, check template
+                        if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
+                    		if(gameRoomList != null) {
+                    			JSONArray roomList=new JSONArray(); 
+                    			JSONObject roomInformation=new JSONObject();
+                    			for(int i=0;i<gameRoomList.size();i++) {
+                    				int id = gameRoomList.get(i).id;
+                    				int availableSpot = gameRoomList.get(i).availableSpot();
+                    				boolean IsGameStarted = gameRoomList.get(i).roomIsGameStarted;                				
+                    				roomInformation.put("room_id",id);
+                    				roomInformation.put("room_avaliable_spot",availableSpot);
+                    				roomInformation.put("room_is_game_started",IsGameStarted);
+                    				roomList.put(roomInformation);
+                    			}
+                    			jsonMap.put("player_id",String.valueOf(clientObject.userID));
+                    			jsonMap.put("room_list", roomList.toString());
+                    		}else {
+                    			 jsonErrorHandler("There is no rooms!", 406, jsonMap);
+                    		}  		
+                    	}else{
+                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                        }
                     }else if(operationRequestString.equals("READY")){
                         // TODO: Set player to Ready, check if in the room, start the game if all player are ready
+                        if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
+                    		if(this.clientObject.isPlayerReady)
+                    			this.clientObject.isPlayerReady = false;
+                    		else
+                    			this.clientObject.isPlayerReady = true;
+                    		jsonMap.put("player_id",String.valueOf(clientObject.userID));
+                    		jsonMap.put("is_player_ready",String.valueOf(clientObject.isPlayerReady));
+                    		gameRoom gameRoom = getGameRoomObject(json.getInt("player_room_id"));                   		
+                    		ArrayList<connectedPlayerClient> connectedPlayers = gameRoom.connectedPlayers;
+                    		if(connectedPlayers.size()>1) {
+                    			int readyClient = 0;
+                    			for(int i=0;i<connectedPlayers.size();i++) {
+                    				if(connectedPlayers.get(i).isPlayerReady)
+                    					readyClient += 1;
+                    				else {
+                    					break;
+                    				}
+                    			}
+                    			if(readyClient == connectedPlayers.size()) 
+                    				gameRoom.roomIsGameStarted = true; //game start  
+                        		jsonMap.put("is_game_start",String.valueOf(gameRoom.roomIsGameStarted));		
+                    		} 		
+                    	}else{
+                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                        }                                   	
                     }else if(operationRequestString.equals("ADDCHAR")){
                         // TODO: ADD Char
+                        if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
+                    		gameRoom gameRoom = getGameRoomObject(json.getInt("player_room_id"));
+                    		if(gameRoom.roomIsGameStarted) {
+                    			int column = json.getInt("colum");
+                    			int row = json.getInt("row");
+                    			String c = json.getString("character");
+                    			char character = c.charAt(0);
+                    			gameRoom.game.playerAddCharacter(column, row, character, this.clientObject.userID);		
+                    		}else {
+                    			jsonErrorHandler("game is not started", 407, jsonMap);
+                    		} 
+                    	}else{
+                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                        }     
+                    }else{
+                        jsonErrorHandler("Operation Not Implemented", 501, jsonMap);
+                    }
                     }else{
                         jsonErrorHandler("Operation Not Implemented", 501, jsonMap);
                     }
