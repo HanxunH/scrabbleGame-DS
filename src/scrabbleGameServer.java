@@ -50,7 +50,7 @@ public class scrabbleGameServer {
             this.game = new scrabbleGame();
         }
 
-        public int avaliableSpot(){
+        public int availableSpot(){
             return maximumPlayersPerGame - connectedPlayers.size();
         }
 
@@ -65,6 +65,30 @@ public class scrabbleGameServer {
             }
             player.isInRoom = false;
             player.roomID = 0;
+        }
+
+        public synchronized void updateGameRoomInfoToPlayers(){
+            Map<String, String> jsonMap = new HashMap<String, String>();
+            jsonMap.put("update", "true");
+            jsonMap.put("update_type", "game_room");
+            jsonMap.put("game_room_id", String.valueOf(this.id));
+            jsonMap.put("is_game_started", String.valueOf(this.game.isStarted()));
+            jsonMap.put("minimal_player_per_game", String.valueOf(minimalPlayersPerGame));
+            jsonMap.put("maximum_player_per_game", String.valueOf(maximumPlayersPerGame));
+            jsonMap.put("current_players_count", String.valueOf(connectedPlayers.size()));
+            jsonMap.put("available_spot", String.valueOf(this.availableSpot()));
+
+            String responseJSONString = jsonMap.toString();
+            for(int i=0; i < connectedPlayers.size(); i++){
+                try{
+                    DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(connectedPlayers.get(i).socket.getOutputStream()));
+                    outputStream.writeUTF(responseJSONString);
+                    outputStream.flush();
+                    outputStream.close();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -261,12 +285,14 @@ public class scrabbleGameServer {
                     }else if(operationRequestString.equals("LEAVEROOM")){
                         if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
                             if(json.has("player_room_id") && json.getInt("player_room_id") == clientObject.roomID){
+                                gameRoom tempGameRoomObject = clientObject.gameRoomObject;
                                 clientObject.gameRoomObject.disconnectPlayer(clientObject);
                                 clientObject.gameRoomObject = null;
                                 clientObject.isInRoom = false;
                                 clientObject.isPlayerReady = false;
                                 jsonMap.put("player_id",String.valueOf(clientObject.userID));
                                 jsonMap.put("player_is_in_game_room",String.valueOf(clientObject.isInRoom));
+                                tempGameRoomObject.updateGameRoomInfoToPlayers();
                             }else{
                                 jsonErrorHandler("No such game room!", 404, jsonMap);
                             }
@@ -279,7 +305,7 @@ public class scrabbleGameServer {
                                 gameRoom gameRoom = getGameRoomObject(json.getInt("player_room_id"));
                                 if(gameRoom == null){
                                     jsonErrorHandler("No such game room!", 404, jsonMap);
-                                }else if(gameRoom.avaliableSpot() <= 0){
+                                }else if(gameRoom.availableSpot() <= 0){
                                     jsonErrorHandler("Room is full!", 405, jsonMap);
                                 }else{
                                     gameRoom.connectedPlayers.add(this.clientObject);
@@ -289,6 +315,7 @@ public class scrabbleGameServer {
                                     jsonMap.put("player_id",String.valueOf(clientObject.userID));
                                     jsonMap.put("player_room_id",String.valueOf(clientObject.roomID));
                                     jsonMap.put("player_is_in_game_room",String.valueOf(clientObject.isInRoom));
+                                    gameRoom.updateGameRoomInfoToPlayers();
                                 }
                             }else{
                                 jsonErrorHandler("Please provide a game room id!", 404, jsonMap);
