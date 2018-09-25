@@ -11,32 +11,42 @@
 // Create a room
 {
   "operation": "CREATEROOM",
-  "player_ID": 0,
+  "player_id": 0,
 }
+{"response_code":"200","player_id":"0","response":"true","player_room_id":"0"}
+
+
+//Leave a room
+{
+  "operation": "LEAVEROOM",
+  "player_id": 0,
+  "player_room_id": 0
+}
+{"response_code":"200","player_id":"0","response":"true"}
 
 // Get List Of room
 {
   "operation": "LISTROOM",
-  "player_ID": 0
+  "player_id": 0
 }
 
 // Join a room
 {
   "operation": "JOINROOM",
-  "player_ID": 0,
+  "player_id": 0,
   "room_id" : 1
 }
 
 // Player Ready To Play (has to be in a game room)
 {
   "operation": "READY",
-  "player_ID": 0,
+  "player_id": 0,
 }
 
 // Add a char at index (has to be in a started game)
 {
   "operation": "ADDCHAR",
-  "player_ID": 0,
+  "player_id": 0,
   "colum": 2,
   "row": 1,
   "character": "c"
