@@ -107,29 +107,29 @@ public class scrabbleGame {
         int columnHigherLowerBound = column;
 
         for(int i=row; i<gameStateRow;i++){
-            if(gameState[column][i] == ' '){
-                break;
-            }
             rowHigherBound = i;
-        }
-        for(int i=row - 1; i>=0;i--){
             if(gameState[column][i] == ' '){
                 break;
             }
+        }
+        for(int i=row; i>=0;i--){
             rowLowerBound = i;
+            if(gameState[column][i] == ' '){
+                break;
+            }
         }
 
         for(int i=column; i<gameStateColumn;i++){
-            if(gameState[i][row] == ' '){
-                break;
-            }
             columnHigherLowerBound = i;
-        }
-        for(int i=column - 1; i>=0;i--){
             if(gameState[i][row] == ' '){
                 break;
             }
+        }
+        for(int i=column; i>=0;i--){
             columnLowerBound = i;
+            if(gameState[i][row] == ' '){
+                break;
+            }
         }
         String rowWord = "";
         String columnWord = "";
@@ -273,8 +273,11 @@ public class scrabbleGame {
             System.out.println(game.getPlayerScore(0));
             game.playerPassThisTurn(1);
             game.playerAddCharacter(0,1,'s',0);
+            game.playerAddCharacter(1,1,'s',1);
+            game.playerAddCharacter(1,2,'d',0);
             System.out.println(game.getPlayerScore(0));
-
+            ArrayList<String> test = game.playerAddCharacter(0,2,'d',1);
+            System.out.println(test);
             game.printGameState();
         }catch (Exception e){
             game.logger.severe(e.getMessage());

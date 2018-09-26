@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e67f79ac-55cd-48d9-baf2-722d196ecd46" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/ClientToServerTemplate.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/ClientToServerTemplate.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/project2/ClientToServerTemplate.json" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/ClientToServerTemplate.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/project2/scrabbleGame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/scrabbleGame.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/project2/scrabbleGamePlayer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/scrabbleGamePlayer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer$clientHandlerThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer$clientHandlerThread.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer$gameRoom.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer$gameRoom.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/scrabbleGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/scrabbleGame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scrabbleGamePlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/scrabbleGamePlayer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scrabbleGameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/scrabbleGameServer.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -58,13 +62,13 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="12746" />
+          <entry key="java" value="12805" />
           <entry key="json" value="503" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="12746" />
+          <entry key="JAVA" value="12805" />
           <entry key="JSON" value="503" />
         </counts>
       </usages-collector>
@@ -72,11 +76,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scrabbleGame.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5192">
-              <caret line="242" column="25" lean-forward="true" selection-start-line="242" selection-start-column="25" selection-end-line="242" selection-end-column="25" />
+            <state relative-caret-position="257">
+              <caret line="218" lean-forward="true" selection-start-line="218" selection-end-line="218" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="imports" expanded="true" />
@@ -87,11 +91,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/scrabbleGameServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="335">
-              <caret line="460" column="25" lean-forward="true" selection-start-line="460" selection-start-column="25" selection-end-line="460" selection-end-column="25" />
+            <state relative-caret-position="601">
+              <caret line="460" column="20" selection-start-line="460" selection-start-column="20" selection-end-line="460" selection-end-column="20" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="imports" expanded="true" />
@@ -119,8 +123,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/serverTesting.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="146">
-              <caret line="41" column="23" lean-forward="true" selection-start-line="41" selection-start-column="23" selection-end-line="41" selection-end-column="23" />
+            <state relative-caret-position="58">
+              <caret line="37" column="12" lean-forward="true" selection-start-line="37" selection-start-column="12" selection-end-line="37" selection-end-column="12" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="imports" expanded="true" />
@@ -242,7 +246,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537932418239" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537932846846" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Libraries" />
@@ -262,7 +266,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.serverTesting">
+  <component name="RunManager" selected="Application.scrabbleGame">
     <configuration default="true" type="Applet" factoryName="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <method v="2">
@@ -329,9 +333,9 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.serverTesting" />
-        <item itemvalue="Application.scrabbleGameServer" />
         <item itemvalue="Application.scrabbleGame" />
+        <item itemvalue="Application.scrabbleGameServer" />
+        <item itemvalue="Application.serverTesting" />
       </list>
     </recent_temporary>
   </component>
@@ -357,12 +361,12 @@
       <workItem from="1537483455702" duration="5277000" />
       <workItem from="1537775373768" duration="11044000" />
       <workItem from="1537868686376" duration="1511000" />
-      <workItem from="1537919993988" duration="8303000" />
+      <workItem from="1537919993988" duration="8731000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="53534000" />
+    <option name="totallyTimeSpent" value="53962000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -377,7 +381,7 @@
     <frame x="0" y="23" width="1680" height="963" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49857143" visible="true" weight="0.17521368" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49857143" visible="true" weight="0.17521368" />
       <window_info id="Structure" order="1" sideWeight="0.50142854" side_tool="true" weight="0.17521368" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -386,7 +390,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.16877152" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.16877152" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -447,31 +451,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ClientToServerTemplate.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="498">
-          <caret line="81" selection-start-line="81" selection-end-line="81" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/serverTesting.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="146">
-          <caret line="41" column="23" lean-forward="true" selection-start-line="41" selection-start-column="23" selection-end-line="41" selection-end-column="23" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scrabbleGameException.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scrabbleGamePlayer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="286">
@@ -487,10 +466,48 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/ClientToServerTemplate.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="498">
+          <caret line="81" selection-start-line="81" selection-end-line="81" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scrabbleGameException.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/serverTesting.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="58">
+          <caret line="37" column="12" lean-forward="true" selection-start-line="37" selection-start-column="12" selection-end-line="37" selection-end-column="12" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scrabbleGame.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="257">
+          <caret line="218" lean-forward="true" selection-start-line="218" selection-end-line="218" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#8420#8421#0" expanded="true" />
+            <element signature="e#8458#8459#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/scrabbleGameServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="335">
-          <caret line="460" column="25" lean-forward="true" selection-start-line="460" selection-start-column="25" selection-end-line="460" selection-end-column="25" />
+        <state relative-caret-position="601">
+          <caret line="460" column="20" selection-start-line="460" selection-start-column="20" selection-end-line="460" selection-end-column="20" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
@@ -510,19 +527,6 @@
             <element signature="e#7351#7352#0" expanded="true" />
             <element signature="e#7418#7419#0" expanded="true" />
             <element signature="e#7453#7454#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scrabbleGame.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5192">
-          <caret line="242" column="25" lean-forward="true" selection-start-line="242" selection-start-column="25" selection-end-line="242" selection-end-column="25" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="imports" expanded="true" />
-            <element signature="e#8420#8421#0" expanded="true" />
-            <element signature="e#8458#8459#0" expanded="true" />
           </folding>
         </state>
       </provider>
