@@ -37,6 +37,8 @@ public class scrabbleGameServer {
         public int roomID = 0;
         public gameRoom gameRoomObject;
         public boolean isPlayerReady = false;
+        public boolean isAgree = false;
+        public int score = 0;
     }
 
     /*
@@ -93,6 +95,21 @@ public class scrabbleGameServer {
 
         public synchronized void askPlayersToVote(ArrayList<String> words, int wordOwnerPlayerID){
             // TODO:
+            JSONObject json = new JSONObject();
+        	 try {
+        		 json.put("vote", true);
+                 json.put("words", words);
+                 json.put("word_owner_id", wordOwnerPlayerID);
+                 
+                 String responseJSONString = json.toString();
+                 for(int i=0; i < connectedPlayers.size(); i++){
+                     DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(connectedPlayers.get(i).socket.getOutputStream()));
+                     outputStream.writeUTF(responseJSONString);
+                     outputStream.flush();
+                 }
+             }catch (Exception e){
+                 e.printStackTrace();
+             }
         }
 
         public synchronized void updateGameStateToPlayers(){
@@ -114,6 +131,25 @@ public class scrabbleGameServer {
                 [{player_id : 0, player_username: "test", player_score : game.getPlayeObject(0).getScore()},
                  {player_id : 1,player_username: "test1", player_score : game.getPlayeObject(1).getScore()}]
                 */
+                 json.put("game_state", gameState);
+                JSONArray playerList = new JSONArray();
+                JSONObject player=new JSONObject();
+    			for(int i=0;i<connectedPlayers.size();i++) {
+    				int id = connectedPlayers.get(i).userID;
+    				String username = connectedPlayers.get(i).username;
+    				int score = connectedPlayers.get(i).score;
+    				player.put("player_id",id);
+    				player.put("player_username",username);
+    				player.put("player_score",score);
+    				playerList.put(player);
+    			}    
+                json.put("plauer_list", playerList);
+                String responseJSONString = json.toString();
+                for(int i=0; i < connectedPlayers.size(); i++){
+                    DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(connectedPlayers.get(i).socket.getOutputStream()));
+                    outputStream.writeUTF(responseJSONString);
+                    outputStream.flush();
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -459,6 +495,32 @@ public class scrabbleGameServer {
                         }
                     }else if(operationRequestString.equals("VOTE")){
                         //TODO: If All players agree, game.approveWord(word, wordOwnerPlayerID) to update score
+                        if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
+                    		gameRoom gameRoom = this.clientObject.gameRoomObject;
+                    		 if(gameRoom.game.isStarted()) {
+                    			 this.clientObject.isAgree= true;
+                                 responseJson.put("player_id",clientObject.userID);
+                                 responseJson.put("is_player_agree",clientObject.isAgree);                       
+                                 int agreeClient = 0;
+                                 for(int i=0;i<this.clientObject.gameRoomObject.connectedPlayers.size();i++) {
+                                     if(this.clientObject.gameRoomObject.connectedPlayers.get(i).isAgree)
+                                    	 agreeClient += 1;
+                                     else {
+                                         break;
+                                     }
+                                 }
+                                 if(agreeClient == this.clientObject.gameRoomObject.connectedPlayers.size()){    
+                                	 String word = json.getString("vote_word");
+                                     int wordOwnerPlayerID = json.getInt("vote_word_owner");
+                                     this.clientObject.gameRoomObject.game.approveWord(word, wordOwnerPlayerID);   
+                                 }                            
+                                 gameRoom.updateGameStateToPlayers();                           
+                             }else {
+                                 jsonErrorHandler("game is not started", 407, responseJson);
+                             }	 
+                    	}else{
+                            jsonErrorHandler("Unauthorised", 403, responseJson);
+                        } 
                     }
                     else{
                         jsonErrorHandler("Operation Not Implemented", 501, responseJson);
