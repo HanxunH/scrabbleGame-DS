@@ -8,14 +8,34 @@ import org.json.*;
 import java.io.*;
 
 public class serverTesting {
+    public static String address = "localhost";
+    public static int port = 6666;
+    public static Socket socket;
+    private static final byte[] STOP = "</STOP>".getBytes();
+
     public static void main(String[] args) {
-        String address = "localhost";
-        int port = 6666;
         Map<String, String> map = new HashMap<String, String>();
+        try{
+            socket = new Socket(address, port);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         map.put("operation","ADDPLAYER");
         map.put("player_username","yeezy");
+        sendRequest(map);
+        map.put("operation","CREATEROOM");
+        map.put("player_id","0");
+        sendRequest(map);
+        map.put("operation","LISTROOM");
+        map.put("player_id","0");
+        sendRequest(map);
+        map.put("operation","READY");
+        map.put("player_id","0");
+        sendRequest(map);
+    }
+
+    public static void sendRequest(Map<String, String> map){
         try{
-            Socket socket = new Socket(address, port);
             JSONObject json = new JSONObject(map);
             String jsonString = json.toString();
             /* Send To Server*/
@@ -24,17 +44,17 @@ public class serverTesting {
             outputStream = new DataOutputStream(socket.getOutputStream());
             outputStream.write(jsonByte);
             outputStream.flush();
-            socket.shutdownOutput();
-
+            outputStream.write(STOP);
+            outputStream.flush();
             /* Receive From Server */
             DataInputStream inputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             String strInputstream = inputStream.readUTF();
+            System.out.println(strInputstream);
             JSONObject js = new JSONObject(strInputstream);
             jsonString = js.toString();
-            System.out.print(jsonString);
+            System.out.println(jsonString);
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
 }

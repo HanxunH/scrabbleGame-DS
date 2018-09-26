@@ -7,18 +7,18 @@ import java.util.logging.Logger;
 
 public class scrabbleGame {
     /* Game Related var */
-    private char[][] gameState;
-    private int[][] gameStatePlayerIDs;
-    private int gameStateColumn = 20;
-    private int gameStateRow = 20;
+    public char[][] gameState;
+    public int[][] gameStatePlayerIDs;
+    public int gameStateColumn = 20;
+    public int gameStateRow = 20;
 
     ArrayList<scrabbleGamePlayer> playerList = new ArrayList<>();
-    private final int minNumberOfPlayer = 2;
-    private boolean isStarted = false;
-    private int nextActionUserID = 0;
+    public final int minNumberOfPlayer = 2;
+    public boolean isStarted = false;
+    public int nextActionUserID = 0;
     /* Helper var */
-    private orcaLogerHelper loggerHandler = new orcaLogerHelper();
-    private Logger logger = loggerHandler.getLogger();
+    public orcaLogerHelper loggerHandler = new orcaLogerHelper();
+    public Logger logger = loggerHandler.getLogger();
 
 
     /* Helper Function */
