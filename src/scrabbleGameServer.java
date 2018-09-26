@@ -260,19 +260,23 @@ public class scrabbleGameServer {
             clientHandler();
         }
 
-        public void jsonErrorHandler(String errorMessage, int errorCode, Map<String, String> jsonMap){
-            jsonMap.put("response", "false");
-            jsonMap.put("response_code", String.valueOf(errorCode));
-            jsonMap.put("error_message", errorMessage);
+        public void jsonErrorHandler(String errorMessage, int errorCode, JSONObject json){
+            try{
+                json.put("response", false);
+                json.put("response_code", errorCode);
+                json.put("error_message", errorMessage);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
 
         public JSONObject clientRequestHandler(JSONObject json){
-            Map<String, String> jsonMap = new HashMap<String, String>();
-            jsonMap.put("response", "true");
-            jsonMap.put("response_code", "200");
+            JSONObject responseJson = new JSONObject();
             if(json.has("operation")){
                 try{
+                    responseJson.put("response", true);
+                    responseJson.put("response_code", 200);
                     String operationRequestString = json.getString("operation");
                     if(operationRequestString.equals("ADDPLAYER")){
                         /*
@@ -281,12 +285,12 @@ public class scrabbleGameServer {
                         if(json.has("player_username")){
                             clientObject.username = json.getString("player_username");
                             clientObject.isLogin = true;
-                            jsonMap.put("player_id",String.valueOf(clientObject.userID));
+                            responseJson.put("player_id",clientObject.userID);
                         }else{
                             /*
                             No player_username Key
                             */
-                            jsonErrorHandler("Please provide player Username", 404, jsonMap);
+                            jsonErrorHandler("Please provide player Username", 404, responseJson);
                         }
                     }else if(operationRequestString.equals("CREATEROOM")){
                         /*
@@ -294,7 +298,7 @@ public class scrabbleGameServer {
                          */
                         if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
                             if(this.clientObject.isInRoom){
-                                jsonErrorHandler("Player Already in Game Room", 405, jsonMap);
+                                jsonErrorHandler("Player Already in Game Room", 405, responseJson);
                             }else{
                                 gameRoom gameRoom = new gameRoom();
                                 gameRoom.id = getRoomCounter();
@@ -308,12 +312,12 @@ public class scrabbleGameServer {
                                 synchronized (gameRoomList){
                                     gameRoomList.add(gameRoom);
                                 }
-                                jsonMap.put("player_id",String.valueOf(clientObject.userID));
-                                jsonMap.put("player_room_id",String.valueOf(gameRoom.id));
-                                jsonMap.put("player_is_in_game_room",String.valueOf(clientObject.isInRoom));
+                                responseJson.put("player_id",clientObject.userID);
+                                responseJson.put("player_room_id",gameRoom.id);
+                                responseJson.put("player_is_in_game_room",clientObject.isInRoom);
                             }
                         }else{
-                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                            jsonErrorHandler("Unauthorised", 403, responseJson);
                         }
                     }else if(operationRequestString.equals("LEAVEROOM")){
                         if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
@@ -323,38 +327,38 @@ public class scrabbleGameServer {
                                 clientObject.gameRoomObject = null;
                                 clientObject.isInRoom = false;
                                 clientObject.isPlayerReady = false;
-                                jsonMap.put("player_id",String.valueOf(clientObject.userID));
-                                jsonMap.put("player_is_in_game_room",String.valueOf(clientObject.isInRoom));
+                                responseJson.put("player_id", clientObject.userID);
+                                responseJson.put("player_is_in_game_room",clientObject.isInRoom);
                                 tempGameRoomObject.updateGameRoomInfoToPlayers();
                             }else{
-                                jsonErrorHandler("No such game room!", 404, jsonMap);
+                                jsonErrorHandler("No such game room!", 404, responseJson);
                             }
                         }else{
-                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                            jsonErrorHandler("Unauthorised", 403, responseJson);
                         }
                     }else if(operationRequestString.equals("JOINROOM")){
                         if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
                             if(json.has("player_room_id") && json.getInt("player_room_id") == clientObject.roomID){
                                 gameRoom gameRoom = getGameRoomObject(json.getInt("player_room_id"));
                                 if(gameRoom == null){
-                                    jsonErrorHandler("No such game room!", 404, jsonMap);
+                                    jsonErrorHandler("No such game room!", 404, responseJson);
                                 }else if(gameRoom.availableSpot() <= 0){
-                                    jsonErrorHandler("Room is full!", 405, jsonMap);
+                                    jsonErrorHandler("Room is full!", 405, responseJson);
                                 }else{
                                     gameRoom.connectedPlayers.add(this.clientObject);
                                     this.clientObject.roomID = gameRoom.id;
                                     this.clientObject.gameRoomObject = gameRoom;
                                     this.clientObject.isInRoom = true;
-                                    jsonMap.put("player_id",String.valueOf(clientObject.userID));
-                                    jsonMap.put("player_room_id",String.valueOf(clientObject.roomID));
-                                    jsonMap.put("player_is_in_game_room",String.valueOf(clientObject.isInRoom));
+                                    responseJson.put("player_id",clientObject.userID);
+                                    responseJson.put("player_room_id",clientObject.roomID);
+                                    responseJson.put("player_is_in_game_room",clientObject.isInRoom);
                                     gameRoom.updateGameRoomInfoToPlayers();
                                 }
                             }else{
-                                jsonErrorHandler("Please provide a game room id!", 404, jsonMap);
+                                jsonErrorHandler("Please provide a game room id!", 404, responseJson);
                             }
                         }else{
-                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                            jsonErrorHandler("Unauthorised", 403, responseJson);
                         }
                     }else if(operationRequestString.equals("LISTROOM")){
                         // TODO: List all room, check template
@@ -371,20 +375,20 @@ public class scrabbleGameServer {
                     				roomInformation.put("room_is_game_started",IsGameStarted);
                     				roomList.put(roomInformation);
                     			}
-                    			jsonMap.put("player_id",String.valueOf(clientObject.userID));
-                    			jsonMap.put("room_list", roomList.toString());
+                                responseJson.put("player_id",clientObject.userID);
+                                responseJson.put("room_list", roomList);
                     		}else {
-                    			 jsonErrorHandler("There is no rooms!", 406, jsonMap);
+                    			 jsonErrorHandler("There is no rooms!", 406, responseJson);
                     		}  		
                     	}else{
-                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                            jsonErrorHandler("Unauthorised", 403, responseJson);
                         }
                     }else if(operationRequestString.equals("READY")){
                         // TODO: Set player to Ready, check if in the room, start the game if all player are ready
                         if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
                             this.clientObject.isPlayerReady = true;
-                    		jsonMap.put("player_id",String.valueOf(clientObject.userID));
-                    		jsonMap.put("is_player_ready",String.valueOf(clientObject.isPlayerReady));
+                            responseJson.put("player_id",clientObject.userID);
+                            responseJson.put("is_player_ready",clientObject.isPlayerReady);
                             int readyClient = 0;
                             for(int i=0;i<this.clientObject.gameRoomObject.connectedPlayers.size();i++) {
                                 if(this.clientObject.gameRoomObject.connectedPlayers.get(i).isPlayerReady)
@@ -417,16 +421,16 @@ public class scrabbleGameServer {
 //                        		jsonMap.put("is_game_start",String.valueOf(gameRoom.roomIsGameStarted));
 //                    		}
                     	}else{
-                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                            jsonErrorHandler("Unauthorised", 403, responseJson);
                         }                                   	
                     }else if(operationRequestString.equals("UNREADY")){
                         if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
                             this.clientObject.isPlayerReady = false;
-                            jsonMap.put("player_id",String.valueOf(clientObject.userID));
-                            jsonMap.put("is_player_ready",String.valueOf(clientObject.isPlayerReady));
+                            responseJson.put("player_id",clientObject.userID);
+                            responseJson.put("is_player_ready",clientObject.isPlayerReady);
                             this.clientObject.gameRoomObject.updateGameRoomInfoToPlayers();
                         }else{
-                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                            jsonErrorHandler("Unauthorised", 403, responseJson);
                         }
                     }else if(operationRequestString.equals("ADDCHAR")){
                         // TODO: ADD Char
@@ -440,10 +444,10 @@ public class scrabbleGameServer {
                     			gameRoom.game.playerAddCharacter(column, row, character, this.clientObject.userID);		
                     		    gameRoom.updateGameStateToPlayers();
                     		}else {
-                    			jsonErrorHandler("game is not started", 407, jsonMap);
+                    			jsonErrorHandler("game is not started", 407, responseJson);
                     		} 
                     	}else{
-                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                            jsonErrorHandler("Unauthorised", 403, responseJson);
                         }     
                     }else if(operationRequestString.equals("PASS")){
                         if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
@@ -452,26 +456,25 @@ public class scrabbleGameServer {
                                 gameRoom.game.playerPassThisTurn(this.clientObject.userID);
                                 gameRoom.updateGameStateToPlayers();
                             }else {
-                                jsonErrorHandler("game is not started", 407, jsonMap);
+                                jsonErrorHandler("game is not started", 407, responseJson);
                             }
                         }else{
-                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                            jsonErrorHandler("Unauthorised", 403, responseJson);
                         }
                     }
                     else{
-                        jsonErrorHandler("Operation Not Implemented", 501, jsonMap);
+                        jsonErrorHandler("Operation Not Implemented", 501, responseJson);
                     }
                 }catch (Exception e){
-                    jsonErrorHandler(e.getMessage(), 500, jsonMap);
+                    jsonErrorHandler(e.getMessage(), 500, responseJson);
                 }
             }else{
                 // No operation Keyword
-                jsonErrorHandler("No Operation Keyword found in request", 404, jsonMap);
+                jsonErrorHandler("No Operation Keyword found in request", 404, responseJson);
             }
 
             /* Respond to Client */
-            JSONObject responseJSON = new JSONObject(jsonMap);
-            return responseJSON;
+            return responseJson;
         }
 
         public void clientHandler() {
