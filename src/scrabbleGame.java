@@ -6,6 +6,10 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class scrabbleGame {
+
+    enum gameAction{
+        ADD,PASS
+    }
     /* Game Related var */
     public char[][] gameState;
     public int[][] gameStatePlayerIDs;
@@ -16,6 +20,7 @@ public class scrabbleGame {
     public final int minNumberOfPlayer = 2;
     public boolean isStarted = false;
     public int nextActionUserID = 0;
+    public boolean isFinished = false;
     /* Helper var */
     public orcaLogerHelper loggerHandler = new orcaLogerHelper();
     public Logger logger = loggerHandler.getLogger();
@@ -144,21 +149,10 @@ public class scrabbleGame {
         return words;
     }
 
-    private void calculateAndSetScore(int column, int row, scrabbleGamePlayer player){
+    private void calculateAndSetScore(String word, scrabbleGamePlayer player){
         /* Caution: No validation */
         int score = player.getScore();
-        for(int i=row; i<gameStateRow;i++){
-            if(gameState[column][i] == ' '){
-                break;
-            }
-            score = score + 1;
-        }
-        for(int i=row - 1; i>=0;i--){
-            if(gameState[column][i] == ' '){
-                break;
-            }
-            score = score + 1;
-        }
+        score = score + word.length();
         player.setScore(score);
     }
 
@@ -217,6 +211,7 @@ public class scrabbleGame {
             this.gameState[column][row] = c;
             this.gameStatePlayerIDs[column][row] = playerID;
         }
+        player.lastAction = gameAction.ADD;
         /* Update the turn */
         this.incrementTheTurn();
         return this.getListOfWordsFromGameState(column,row);
@@ -246,6 +241,19 @@ public class scrabbleGame {
         scrabbleGamePlayer player = getPlayeObject(playerID);
         if( player == null ){
             throw new scrabbleGameException("No such User! userID: " + String.valueOf(this.nextActionUserID));
+        }
+        player.lastAction = gameAction.PASS;
+        int count = 0;
+        for(int i = 0; i < playerList.size();i++){
+            if(playerList.get(i).lastAction == gameAction.PASS){
+                count = count + 1;
+            }else{
+                break;
+            }
+        }
+        if(count == playerList.size()){
+            isFinished = true;
+            isStarted = false;
         }
         this.incrementTheTurn();
     }

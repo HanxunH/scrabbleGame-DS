@@ -77,3 +77,9 @@
   "row": 1,
   "character": "c"
 }
+
+// Player pass this turn
+{
+  "operation": "PASS",
+  "player_id": 0,
+}

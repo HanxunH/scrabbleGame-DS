@@ -98,8 +98,28 @@ public class scrabbleGameServer {
             }
             char[][] gameState = game.getGameState();
             Map<String, String> jsonMap = new HashMap<String, String>();
-            jsonMap.put("nextActionUserID", String.valueOf(game.getNextActionUserID()));
+            jsonMap.put("next_action_user_id", String.valueOf(game.getNextActionUserID()));
+            jsonMap.put("next_action_username", game.getPlayeObject(game.getNextActionUserID()).getUsername());
+            jsonMap.put("is_started", String.valueOf(game.isStarted()));
+            jsonMap.put("is_finish", String.valueOf(game.isFinished));
             // TODO: UPDATE Game State to Client
+            /*
+            add Game State[[]]
+            add Player list and score
+            [
+             {
+             player_id : 0,
+             player_username: "test",
+             player_score : game.getPlayeObject(0).getScore()
+             },
+             {
+             player_id : 1,
+             player_username: "test1",
+             player_score : game.getPlayeObject(1).getScore()
+             }
+            ]
+
+            */
         }
     }
 
@@ -425,7 +445,20 @@ public class scrabbleGameServer {
                     	}else{
                             jsonErrorHandler("Unauthorised", 403, jsonMap);
                         }     
-                    }else{
+                    }else if(operationRequestString.equals("PASS")){
+                        if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
+                            gameRoom gameRoom = this.clientObject.gameRoomObject;
+                            if(gameRoom.game.isStarted()) {
+                                gameRoom.game.playerPassThisTurn(this.clientObject.userID);
+                                gameRoom.updateGameStateToPlayers();
+                            }else {
+                                jsonErrorHandler("game is not started", 407, jsonMap);
+                            }
+                        }else{
+                            jsonErrorHandler("Unauthorised", 403, jsonMap);
+                        }
+                    }
+                    else{
                         jsonErrorHandler("Operation Not Implemented", 501, jsonMap);
                     }
                 }catch (Exception e){

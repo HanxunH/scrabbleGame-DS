@@ -6,6 +6,7 @@ public class scrabbleGamePlayer {
     private int userID;
     private int score;
     private String username;
+    public scrabbleGame.gameAction lastAction;
 
     public scrabbleGamePlayer(String username, int userID){
         this.username = username;
