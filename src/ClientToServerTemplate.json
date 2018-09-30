@@ -13,7 +13,7 @@
   "operation": "CREATEROOM",
   "player_id": 0
 }
-{"response_code":"200","player_id":"0","response":"true","player_room_id":"0"}
+{"response_code":"201","player_id":"0","response":"true","player_room_id":"0"}
 
 
 //Leave a room
@@ -22,14 +22,14 @@
   "player_id": 0,
   "player_room_id": 0
 }
-{"response_code":"200","player_id":"0","response":"true"}
+{"response_code":"202","player_id":"0","response":"true"}
 
 // Get List Of room
 {
   "operation": "LISTROOM",
   "player_id": 0
 }
-{"response_code":"200",
+{"response_code":"204",
   "player_id":"0",
   "response":"true",
   "room_list": [
@@ -56,18 +56,18 @@
   "player_id": 0,
   "room_id" : 1
 }
-
+{"response_code":"203"}
 // Player Ready To Play (has to be in a game room)
 {
   "operation": "READY",
   "player_id": 0
 }
-
+{"response_code":"205"}
 {
   "operation": "UNREADY",
   "player_id": 0
 }
-
+{"response_code":"206"}
 
 // Add a char at index (has to be in a started game)
 {
@@ -77,9 +77,10 @@
   "row": 1,
   "character": "c"
 }
-
+{"response_code":"207"}
 // Player pass this turn
 {
   "operation": "PASS",
   "player_id": 0,
 }
+{"response_code":"208"}
