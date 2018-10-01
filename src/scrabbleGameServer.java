@@ -416,6 +416,29 @@ public class scrabbleGameServer {
                     	}else{
                             jsonErrorHandler("Unauthorised", 403, responseJson);
                         }
+                    }if(operationRequestString.equals("LISTCLIENTS")){
+                        /*
+                        show all connected clients
+                        */
+                    	 if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
+                     		if(clientList.size() != 0) {
+                     			JSONArray connectedCilentList=new JSONArray(); 
+                     			JSONObject connectedClientStatus=new JSONObject();
+                     			for(int i = 0; i < clientList.size(); i++) {
+                            		if(clientList.get(i).isLogin) {
+                            			connectedClientStatus.put("player_id", clientList.get(i).userID);
+                            			connectedClientStatus.put("player_is_in_room", clientList.get(i).isInRoom);
+                            			connectedCilentList.put(connectedClientStatus);
+                            		}                            
+                                 responseJson.put("connected_cilent_list", connectedCilentList);                              
+                                 responseJson.put("response_code", 220);
+                     			}
+                     		}else {
+                     			 jsonErrorHandler("There is no other users!", 420, responseJson);
+                     		}  		
+                     	}else{
+                             jsonErrorHandler("Unauthorised", 403, responseJson);
+                         }                	                   
                     }else if(operationRequestString.equals("READY")){
                         if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
                             this.clientObject.isPlayerReady = true;
