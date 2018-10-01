@@ -95,12 +95,15 @@ public class scrabbleGameServer {
 
         public synchronized void askPlayersToVote(ArrayList<String> words, int wordOwnerPlayerID){
             // TODO:
+            if(game.isStarted == false) {
+        		logger.severe("Game did not started, cannot ask players to vote");
+                return;
+        	}
             JSONObject json = new JSONObject();
         	 try {
         		 json.put("vote", true);
                  json.put("words", words);
-                 json.put("word_owner_id", wordOwnerPlayerID);
-                 
+                 json.put("word_owner_id", wordOwnerPlayerID);          
                  String responseJSONString = json.toString();
                  for(int i=0; i < connectedPlayers.size(); i++){
                      DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(connectedPlayers.get(i).socket.getOutputStream()));
@@ -521,23 +524,26 @@ public class scrabbleGameServer {
                         if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
                     		gameRoom gameRoom = this.clientObject.gameRoomObject;
                     		 if(gameRoom.game.isStarted()) {
-                    			 this.clientObject.isAgree= true;
-                                 responseJson.put("player_id",clientObject.userID);
-                                 responseJson.put("is_player_agree",clientObject.isAgree);                       
-                                 int agreeClient = 0;
-                                 for(int i=0;i<this.clientObject.gameRoomObject.connectedPlayers.size();i++) {
-                                     if(this.clientObject.gameRoomObject.connectedPlayers.get(i).isAgree)
-                                    	 agreeClient += 1;
-                                     else {
-                                         break;
+                    			 JSONArray words = json.getJSONArray("words");
+                    			 for(int i = 0; i< words.length(); i++) {
+                    				 int agreeClient = 0;
+                    				 for(int j=0; j<this.clientObject.gameRoomObject.connectedPlayers.size(); j++) {
+                                    	 if(json.getBoolean("isAgree") == true) {
+                                        	 agreeClient += 1;
+                                    	 }
+                                         else {
+                                             break;
+                                         }
                                      }
-                                 }
-                                 if(agreeClient == this.clientObject.gameRoomObject.connectedPlayers.size()){    
-                                	 String word = json.getString("vote_word");
-                                     int wordOwnerPlayerID = json.getInt("vote_word_owner");
-                                     this.clientObject.gameRoomObject.game.approveWord(word, wordOwnerPlayerID);   
-                                 }                            
-                                 gameRoom.updateGameStateToPlayers();                           
+                                     if(agreeClient == this.clientObject.gameRoomObject.connectedPlayers.size()){    
+                                    	 //没写完 要看从client传来的json是怎么样的
+                                    	 String word = json.getString("vote_word");
+                                         int wordOwnerPlayerID = json.getInt("vote_word_owner");
+                                         
+                                         this.clientObject.gameRoomObject.game.approveWord(word, wordOwnerPlayerID);                                        
+                                     }                                              				 
+                    			 }             
+                    			 gameRoom.updateGameStateToPlayers();                                         
                              }else {
                                  jsonErrorHandler("game is not started", 407, responseJson);
                              }	 
