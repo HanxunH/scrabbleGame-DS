@@ -90,6 +90,16 @@ public class scrabbleGameServer {
                 json.put("maximum_player_per_game", maximumPlayersPerGame);
                 json.put("current_players_count", connectedPlayers.size());
                 json.put("available_spot", this.availableSpot());
+                JSONArray playerInThisGameRoomList=new JSONArray();
+                for(int i=0; i < connectedPlayers.size(); i++){
+                    JSONObject playerJsonObject = new JSONObject();
+                    playerJsonObject.put("player_id", connectedPlayers.get(i).userID);
+                    playerJsonObject.put("player_username", connectedPlayers.get(i).username);
+                    playerJsonObject.put("is_ready", connectedPlayers.get(i).isPlayerReady);
+                    playerJsonObject.put("score",connectedPlayers.get(i).score);
+                    playerInThisGameRoomList.put(playerJsonObject);
+                }
+                json.put("player_list", playerInThisGameRoomList);
                 String responseJSONString = json.toString();
                 for(int i=0; i < connectedPlayers.size(); i++){
                     DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(connectedPlayers.get(i).socket.getOutputStream()));
@@ -535,7 +545,9 @@ public class scrabbleGameServer {
                                 this.clientObject.gameRoomObject.game.startGame();
                             }
                             this.clientObject.gameRoomObject.updateGameRoomInfoToPlayers();
-                            this.clientObject.gameRoomObject.updateGameStateToPlayers();
+                            if(this.clientObject.gameRoomObject.game.isStarted()){
+                                this.clientObject.gameRoomObject.updateGameStateToPlayers();
+                            }
 //                    		gameRoom gameRoom = getGameRoomObject(json.getInt("player_room_id"));
 //                    		ArrayList<connectedPlayerClient> connectedPlayers = gameRoom.connectedPlayers;
 //                    		if(connectedPlayers.size()>1) {
