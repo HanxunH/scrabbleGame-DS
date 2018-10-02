@@ -32,6 +32,11 @@ public class serverTesting {
         map.put("operation","READY");
         map.put("player_id","0");
         sendRequest(map);
+        try{
+            Thread.sleep(100000);
+        }catch (Exception e){
+
+        }
     }
 
     public static void sendRequest(Map<String, String> map){

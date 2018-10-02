@@ -58,11 +58,11 @@ public class scrabbleGameServer {
             return maximumPlayersPerGame - connectedPlayers.size();
         }
 
-        public synchronized void connectPlayer(){
+        public void connectPlayer(){
 
         }
 
-        public synchronized void disconnectPlayer(connectedPlayerClient player){
+        public void disconnectPlayer(connectedPlayerClient player){
             connectedPlayers.remove(player);
             if(connectedPlayers.size() == 0){
                 gameRoomList.remove(this);
@@ -71,7 +71,7 @@ public class scrabbleGameServer {
             player.roomID = 0;
         }
 
-        public synchronized void updateGameRoomInfoToPlayers(){
+        public void updateGameRoomInfoToPlayers(){
             JSONObject json = new JSONObject();
             try {
                 json.put("update", true);
@@ -94,7 +94,7 @@ public class scrabbleGameServer {
             }
         }
 
-        public synchronized void askPlayersToVote(ArrayList<String> words, int wordOwnerPlayerID){
+        public void askPlayersToVote(ArrayList<String> words, int wordOwnerPlayerID){
             // TODO:
             if(game.isStarted == false) {
         		logger.severe("Game did not started, cannot ask players to vote");
@@ -117,7 +117,7 @@ public class scrabbleGameServer {
              }
         }
 
-        public synchronized void updateGameStateToPlayers(){
+        public void updateGameStateToPlayers(){
             if(game.isStarted() == false){
                 logger.severe("Game did not started, cannot update to players");
                 return;
@@ -211,7 +211,7 @@ public class scrabbleGameServer {
         }
     }
 
-    public synchronized static void updateRoomListToAllPlayers(){
+    public static void updateRoomListToAllPlayers(){
         JSONObject json = new JSONObject();
         try {
             if(gameRoomList != null) {
@@ -283,37 +283,54 @@ public class scrabbleGameServer {
     /*
      * Socket Server
      */
-
-    private static synchronized int getClientCounter() {
-        return clientCounter;
+    private static Object clientCounterLock = new Object();
+    private static int getClientCounter() {
+        synchronized (clientCounterLock){
+            return clientCounter;
+        }
     }
 
-    private static synchronized void incrementClientCounter(){
-        clientCounter = clientCounter + 1;
+    private static void incrementClientCounter(){
+        synchronized (clientCounterLock){
+            clientCounter = clientCounter + 1;
+        }
     }
 
-    private static synchronized void decrementClientCounter(){
-        clientCounter = clientCounter - 1;
+    private static void decrementClientCounter(){
+        synchronized (clientCounterLock){
+            clientCounter = clientCounter - 1;
+        }
     }
 
-    private static synchronized void resetClientCounter(int n){
-        clientCounter = n;
+    private static void resetClientCounter(int n){
+        synchronized (clientCounterLock){
+            clientCounter = n;
+        }
     }
 
-    private static synchronized int getRoomCounter() {
-        return gameRoomCounter;
+    private static Object gameRoomCounterLock = new Object();
+    private static int getRoomCounter() {
+        synchronized (clientCounterLock){
+            return gameRoomCounter;
+        }
     }
 
-    private static synchronized void incrementGameRoomCounter(){
-        gameRoomCounter = gameRoomCounter + 1;
+    private static void incrementGameRoomCounter(){
+        synchronized (clientCounterLock){
+            gameRoomCounter = gameRoomCounter + 1;
+        }
     }
 
-    private static synchronized void decrementGameRoomCounter(){
-        gameRoomCounter = gameRoomCounter - 1;
+    private static void decrementGameRoomCounter(){
+        synchronized (clientCounterLock){
+            gameRoomCounter = gameRoomCounter - 1;
+        }
     }
 
-    private static synchronized void resetGameRoomCounter(int n){
-        gameRoomCounter = n;
+    private static void resetGameRoomCounter(int n){
+        synchronized (clientCounterLock){
+            gameRoomCounter = n;
+        }
     }
 
     private static synchronized gameRoom getGameRoomObject(int roomID){
@@ -327,7 +344,7 @@ public class scrabbleGameServer {
         return null;
     }
 
-    public static class clientHandlerThread implements Runnable {
+    public static class clientHandlerThread extends Thread {
         connectedPlayerClient clientObject;
 
         public clientHandlerThread(connectedPlayerClient clientObject) {
@@ -624,7 +641,7 @@ public class scrabbleGameServer {
                     /* Get Data From Client */
                     DataInputStream inputStream = new DataInputStream(this.clientObject.socket.getInputStream());
                     ByteArrayOutputStream data = new ByteArrayOutputStream();
-                    byte[] by = new byte[2048];
+                    byte[] by = new byte[4096];
                     int n;
                     while ((n = inputStream.read(by)) != -1) {
                         data.write(by, 0, n);
@@ -639,22 +656,25 @@ public class scrabbleGameServer {
                     /*
                         JSON Parsing
                     */
-                    JSONObject json = new JSONObject(strInputstream);
-
-                    /*
+                    try{
+                        JSONObject json = new JSONObject(strInputstream);
+                        /*
                         Handle client Request
-                     */
-                    JSONObject responseJson = clientRequestHandler(json);
-                    System.out.println(responseJson);
-                    String responseJSONString = responseJson.toString();
+                        */
+                        JSONObject responseJson = clientRequestHandler(json);
+                        System.out.println(responseJson);
+                        String responseJSONString = responseJson.toString();
 
-                    /*
-                        Reply Client
-                     */
-                    DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(this.clientObject.socket.getOutputStream()));
-                    outputStream.writeUTF(responseJSONString);
-                    outputStream.flush();
-                    logger.info("Replay for client ID: " + String.valueOf(this.clientObject.userID));
+                         /*
+                          Reply Client
+                        */
+                        DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(this.clientObject.socket.getOutputStream()));
+                        outputStream.writeUTF(responseJSONString);
+                        outputStream.flush();
+                        logger.info("Replay for client ID: " + String.valueOf(this.clientObject.userID));
+                    }catch (Exception e){
+                        logger.severe(e.getMessage() + " Request Data: " + strInputstream);
+                    }
                 }
 
             }catch (Exception e){
@@ -679,6 +699,7 @@ public class scrabbleGameServer {
             serverSocket = new ServerSocket(port);
             logger.info("Server started on port: " + String.valueOf(port));
             while (true) {
+                logger.info("Waiting for Client ...");
                 Socket socket = serverSocket.accept();
                 logger.info("Client ID: " + String.valueOf(getClientCounter()) + " accepted");
                 connectedPlayerClient client = new connectedPlayerClient();
@@ -686,11 +707,9 @@ public class scrabbleGameServer {
                 client.userID = getClientCounter();
                 client.userIP = socket.getInetAddress();
                 client.userIPString = client.userIP.getHostAddress();
-                synchronized (clientList){
-                    clientList.add(client);
-                }
+                clientList.add(client);
                 clientHandlerThread clientThread = new clientHandlerThread(client);
-                clientThread.run();
+                clientThread.start();
                 incrementClientCounter();
             }
         } catch (Exception e) {
