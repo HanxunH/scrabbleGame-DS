@@ -17,7 +17,7 @@ public class scrabbleGame {
     public int gameStateRow = 20;
 
     ArrayList<scrabbleGamePlayer> playerList = new ArrayList<>();
-    public final int minNumberOfPlayer = 2;
+    public final int minNumberOfPlayer = 1;
     public boolean isStarted = false;
     public int nextActionUserID = 0;
     public boolean isFinished = false;

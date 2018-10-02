@@ -45,7 +45,7 @@ public class scrabbleGameServer {
      * Game Room Class
      */
     public static class gameRoom{
-        private int minimalPlayers = 2;
+        private int minimalPlayers = 1;
         private int maximumPlayers = 4;
         public ArrayList<connectedPlayerClient> connectedPlayers = new ArrayList<>();
         public scrabbleGame game;
@@ -77,6 +77,7 @@ public class scrabbleGameServer {
                 json.put("update", true);
                 json.put("update_type", "game_room");
                 json.put("game_room_id", this.id);
+                json.put("response_code", 230);
                 json.put("is_game_started", this.game.isStarted());
                 json.put("minimal_player_per_game", minimalPlayersPerGame);
                 json.put("maximum_player_per_game", maximumPlayersPerGame);
@@ -103,7 +104,8 @@ public class scrabbleGameServer {
         	 try {
         		 json.put("vote", true);
                  json.put("words", words);
-                 json.put("word_owner_id", wordOwnerPlayerID);          
+                 json.put("word_owner_id", wordOwnerPlayerID);
+                 json.put("response_code", 240);
                  String responseJSONString = json.toString();
                  for(int i=0; i < connectedPlayers.size(); i++){
                      DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(connectedPlayers.get(i).socket.getOutputStream()));
@@ -127,6 +129,7 @@ public class scrabbleGameServer {
                 json.put("next_action_username", game.getPlayeObject(game.getNextActionUserID()).getUsername());
                 json.put("is_started", game.isStarted());
                 json.put("is_finish", game.isFinished);
+                json.put("response_code", 225);
                 // TODO: UPDATE Game State to Client
                  /*
                 add Game State[[]]
@@ -167,7 +170,7 @@ public class scrabbleGameServer {
     private static int defaultPort = 6666;
     private static int clientCounter = 0;
     private static int gameRoomCounter = 0;
-    private static int minimalPlayersPerGame = 2;
+    private static int minimalPlayersPerGame = 1;
     private static int maximumPlayersPerGame = 4;
     private static orcaLogerHelper loggerHandler = new orcaLogerHelper();
     private static Logger logger = loggerHandler.getLogger();
@@ -351,7 +354,6 @@ public class scrabbleGameServer {
             if(json.has("operation")){
                 try{
                     responseJson.put("response", true);
-                    responseJson.put("response_code", 200);
                     String operationRequestString = json.getString("operation");
                     if(operationRequestString.equals("ADDPLAYER")){
                         /*
@@ -361,6 +363,7 @@ public class scrabbleGameServer {
                             clientObject.username = json.getString("player_username");
                             clientObject.isLogin = true;
                             responseJson.put("player_id",clientObject.userID);
+                            responseJson.put("response_code", 200);
                         }else{
                             /*
                             No player_username Key
@@ -453,9 +456,9 @@ public class scrabbleGameServer {
                     				roomInformation.put("room_id",id);
                     				roomInformation.put("room_avaliable_spot",availableSpot);
                     				roomInformation.put("room_is_game_started",IsGameStarted);
-                                    responseJson.put("response_code", 204);
                                     roomList.put(roomInformation);
                     			}
+                                responseJson.put("response_code", 204);
                                 responseJson.put("player_id",clientObject.userID);
                                 responseJson.put("room_list", roomList);
                     		}else {
@@ -464,7 +467,7 @@ public class scrabbleGameServer {
                     	}else{
                             jsonErrorHandler("Unauthorised", 403, responseJson);
                         }
-                    }if(operationRequestString.equals("LISTCLIENTS")){
+                    }else if(operationRequestString.equals("LISTCLIENTS")){
                         /*
                         show all connected clients
                         */
@@ -599,8 +602,7 @@ public class scrabbleGameServer {
                     	}else{
                             jsonErrorHandler("Unauthorised", 403, responseJson);
                         } 
-                    }
-                    else{
+                    }else{
                         jsonErrorHandler("Operation Not Implemented", 501, responseJson);
                     }
                 }catch (Exception e){
@@ -643,6 +645,7 @@ public class scrabbleGameServer {
                         Handle client Request
                      */
                     JSONObject responseJson = clientRequestHandler(json);
+                    System.out.println(responseJson);
                     String responseJSONString = responseJson.toString();
 
                     /*
