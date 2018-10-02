@@ -33,7 +33,7 @@ public class serverTesting {
         map.put("player_id","0");
         sendRequest(map);
         try{
-            Thread.sleep(100000);
+            Thread.sleep(5000);
         }catch (Exception e){
 
         }

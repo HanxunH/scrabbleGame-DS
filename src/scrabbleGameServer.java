@@ -656,25 +656,21 @@ public class scrabbleGameServer {
                     /*
                         JSON Parsing
                     */
-                    try{
-                        JSONObject json = new JSONObject(strInputstream);
-                        /*
-                        Handle client Request
-                        */
-                        JSONObject responseJson = clientRequestHandler(json);
-                        System.out.println(responseJson);
-                        String responseJSONString = responseJson.toString();
 
-                         /*
-                          Reply Client
-                        */
-                        DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(this.clientObject.socket.getOutputStream()));
-                        outputStream.writeUTF(responseJSONString);
-                        outputStream.flush();
-                        logger.info("Replay for client ID: " + String.valueOf(this.clientObject.userID));
-                    }catch (Exception e){
-                        logger.severe(e.getMessage() + " Request Data: " + strInputstream);
-                    }
+                    JSONObject json = new JSONObject(strInputstream);
+                    /*
+                    Handle client Request
+                    */
+                    JSONObject responseJson = clientRequestHandler(json);
+                    System.out.println(responseJson);
+                    String responseJSONString = responseJson.toString();
+
+                    /*
+                    Reply Client
+                    */
+                    DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(this.clientObject.socket.getOutputStream()));
+                    outputStream.writeUTF(responseJSONString);outputStream.flush();logger.info("Replay for client ID: " + String.valueOf(this.clientObject.userID));
+
                 }
 
             }catch (Exception e){
