@@ -55,7 +55,9 @@ public class scrabbleGameServer {
         }
 
         public int availableSpot(){
-            return maximumPlayersPerGame - connectedPlayers.size();
+            synchronized (this){
+                return maximumPlayersPerGame - connectedPlayers.size();
+            }
         }
 
         public void connectPlayer(){
@@ -63,12 +65,17 @@ public class scrabbleGameServer {
         }
 
         public void disconnectPlayer(connectedPlayerClient player){
-            connectedPlayers.remove(player);
-            if(connectedPlayers.size() == 0){
-                gameRoomList.remove(this);
+            synchronized (this){
+                connectedPlayers.remove(player);
+                if(connectedPlayers.size() == 0){
+                    synchronized(gameRoomList){
+                        gameRoomList.remove(this);
+                        updateRoomListToAllPlayers();
+                    }
+                }
+                player.isInRoom = false;
+                player.roomID = 0;
             }
-            player.isInRoom = false;
-            player.roomID = 0;
         }
 
         public void updateGameRoomInfoToPlayers(){
@@ -333,7 +340,7 @@ public class scrabbleGameServer {
         }
     }
 
-    private static synchronized gameRoom getGameRoomObject(int roomID){
+    private static gameRoom getGameRoomObject(int roomID){
         synchronized (gameRoomList){
             for(int i=0;i<gameRoomList.size();i++){
                 if(gameRoomList.get(i).id == roomID){
