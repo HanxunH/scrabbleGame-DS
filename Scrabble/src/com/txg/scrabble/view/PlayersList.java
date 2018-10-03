@@ -30,6 +30,7 @@ public class PlayersList extends JFrame{
 	private JScrollPane list1ScrollPane;
 	public static JList list = new JList();
 	public static  JList list_1 = new JList();
+	private int room_id=-1;
 	/**
 	 * Launch the application.
 	 */
@@ -113,6 +114,26 @@ public class PlayersList extends JFrame{
 		gbc_btnJoin.gridx = 2;
 		gbc_btnJoin.gridy = 1;
 		panel.add(btnJoin, gbc_btnJoin);
+		btnJoin.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (room_id!=-1) {
+					PlayerRoomFrame frame=new PlayerRoomFrame();
+					JSONObject object=new JSONObject();
+					try {
+						object.put("operation", "JOINROOM");
+						object.put("player_id", Config.user.getId());
+						object.put("player_room_id", room_id);
+					} catch (JSONException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					MessageController.controller.sendMessage(object);					
+				}
+			}
+		});
 
 		
 		list.setBackground(new Color(255, 204, 102));
@@ -154,16 +175,7 @@ public class PlayersList extends JFrame{
 					int[] index = list_1.getSelectedIndices();
 					ListModel listModel = list_1.getModel();
 					for (int i : index) {
-						JSONObject object=new JSONObject();
-						try {
-							object.put("operation", "JOINROOM");
-							object.put("player_id", Config.user.getId());
-							object.put("room_id", listModel.getElementAt(i));
-						} catch (JSONException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						MessageController.controller.sendMessage(object);
+						room_id=i;
 					}					
 				}
 

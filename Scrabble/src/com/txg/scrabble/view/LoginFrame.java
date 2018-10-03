@@ -22,7 +22,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.txg.scrabble.config.Config;
-import com.txg.scrabble.domain.User;
 import com.txg.scrabble.model.ConnectToServer;
 import com.txg.scrabble.model.MessageController;
 
@@ -82,7 +81,7 @@ public class LoginFrame extends JFrame implements ActionListener{
 		login.addActionListener(this);
 		test.addActionListener(this);
 		
-		southContent = new JPanel(new FlowLayout(FlowLayout.CENTER, 75, 15));
+		southContent = new JPanel(new FlowLayout());
 		southContent.add(test);
 		southContent.add(regist);
 		southContent.add(login);

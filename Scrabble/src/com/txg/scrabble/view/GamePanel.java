@@ -18,7 +18,7 @@ public class GamePanel extends JPanel implements MouseListener{
 
 	private int panelSize;
 	private int blockSize;
-	
+	public char[][] characters=new char[20][20];
 	public GamePanel(int panelSize) {
 		// TODO Auto-generated constructor stub
 		this.panelSize=panelSize/Config.MATRIXNUM*Config.MATRIXNUM;
@@ -28,6 +28,7 @@ public class GamePanel extends JPanel implements MouseListener{
 	public void paint(Graphics g) {
 		// TODO Auto-generated method stub
 		drawBoard((Graphics2D) g);
+		updateCharacters((Graphics2D) g);
 	}
 	public void drawBoard(Graphics2D g){
 		panelSize=this.getWidth();
@@ -38,6 +39,13 @@ public class GamePanel extends JPanel implements MouseListener{
 			g.drawLine(i*blockSize, 0, i*blockSize, Config.MATRIXNUM*blockSize);
 		}
 		
+	}
+	public void updateCharacters(Graphics2D g){
+		for(int i=0;i<20;i++){
+			for(int j=0;j<20;j++){
+				g.drawString(characters[i][j]+"", blockSize*i, blockSize*j);
+			}
+		}
 	}
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -80,5 +88,8 @@ public class GamePanel extends JPanel implements MouseListener{
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	public void setCharacters(char[][] characters) {
+		this.characters = characters;
 	}
 }

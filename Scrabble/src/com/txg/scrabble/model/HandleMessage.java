@@ -24,6 +24,7 @@ public class HandleMessage {
 
 			switch (code) {
 			case 200:
+				System.out.println(object);
 				operations.RAddPlayer(object);
 				break;
 			case 201:
@@ -37,12 +38,20 @@ public class HandleMessage {
 				operations.RListRoom(object);
 				break;
 			case 205:
+				operations.RChangeButton(object);
 				break;
 			case 206:
+				operations.RChangeButton(object);
 				break;
 			case 207:
 				break;
 			case 208:
+				break;
+			case 230:
+				operations.RUpdatePlayerInRoom(object);
+				break;
+			case 225:
+				operations.RStartGame(object);
 				break;
 			}
 		} catch (JSONException e) {
