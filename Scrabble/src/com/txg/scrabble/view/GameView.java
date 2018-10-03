@@ -24,7 +24,7 @@ public class GameView extends JFrame implements KeyListener,ActionListener{
 
 	public static GameView gameView=null;
 	private int screenSize;
-	private GamePanel gamePanel;
+	public GamePanel gamePanel;
 
 	private UserPanelHorizontal userPanelHorizontal1;
 	private UserPanelHorizontal userPanelHorizontal2;
@@ -107,6 +107,11 @@ public class GameView extends JFrame implements KeyListener,ActionListener{
 			this.add(userPanelHorizontal2);
 			this.add(userPanelVertical1);
 			this.add(userPanelVertical2);
+		}else{
+			userPanelHorizontal1 = new UserPanelHorizontal(screenSize * 7 / 10, screenSize * 3 / 20, "DENG Yue", 100,
+					5);
+			userPanelHorizontal1.setBounds(screenSize * 3 / 20, 0, screenSize * 7 / 10, screenSize * 3 / 20);
+			this.add(userPanelHorizontal1);
 		}
 		this.add(character);
 		this.add(agree);
@@ -127,7 +132,7 @@ public class GameView extends JFrame implements KeyListener,ActionListener{
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		int screenWidth = (int) screen.getWidth() * 9 / 10;
 		int screenHeight = (int) screen.getHeight() * 9 / 10;
-		screenSize = (screenWidth >= screenHeight ? screenHeight : screenHeight) / 84 * 84;
+		int screenSize = (screenWidth >= screenHeight ? screenHeight : screenHeight) / 84 * 84;
 		return screenSize;
 	}
 

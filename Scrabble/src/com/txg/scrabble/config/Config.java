@@ -12,4 +12,5 @@ public class Config {
 	public static final Color bgColor=new Color(216, 200, 148);
 	public static User user=new User();
 	public static Vector<Room> roomList=new Vector<Room>();
+	public static boolean gameStartClick=true;
 }
