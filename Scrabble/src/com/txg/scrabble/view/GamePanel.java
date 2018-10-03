@@ -1,6 +1,8 @@
 package com.txg.scrabble.view;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -26,13 +28,18 @@ public class GamePanel extends JPanel implements MouseListener{
 	}
 	@Override
 	public void paint(Graphics g) {
+		super.paint(g);
 		// TODO Auto-generated method stub
 		drawBoard((Graphics2D) g);
 		updateCharacters((Graphics2D) g);
 	}
+
 	public void drawBoard(Graphics2D g){
-		panelSize=this.getWidth();
+		//panelSize=this.getWidth();
 		blockSize=panelSize/20;
+		g.setColor(Config.bgColor);
+		g.fillRect(0, 0, this.getWidth(), this.getHeight());
+		g.setColor(Color.black);
 		g.setStroke(new BasicStroke(2.0f));
 		for (int i = 0; i <= Config.MATRIXNUM; i++) {
 			g.drawLine(0, i*blockSize, Config.MATRIXNUM*blockSize, i*blockSize);
@@ -41,9 +48,10 @@ public class GamePanel extends JPanel implements MouseListener{
 		
 	}
 	public void updateCharacters(Graphics2D g){
+		g.setFont(new Font("Arial", Font.BOLD, 40));
 		for(int i=0;i<20;i++){
 			for(int j=0;j<20;j++){
-				g.drawString(characters[i][j]+"", blockSize*i, blockSize*j);
+				g.drawString(characters[i][j]+"", blockSize*i+1, blockSize*(j+1)-1);
 			}
 		}
 	}
@@ -77,7 +85,6 @@ public class GamePanel extends JPanel implements MouseListener{
 			e1.printStackTrace();
 		}
 		MessageController.controller.sendMessage(object);
-		 
 	}
 	@Override
 	public void mouseEntered(MouseEvent e) {

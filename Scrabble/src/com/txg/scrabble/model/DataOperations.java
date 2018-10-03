@@ -1,5 +1,6 @@
 package com.txg.scrabble.model;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import org.json.JSONArray;
@@ -9,6 +10,7 @@ import org.json.JSONObject;
 import com.txg.scrabble.config.Config;
 import com.txg.scrabble.domain.Room;
 import com.txg.scrabble.domain.User;
+import com.txg.scrabble.view.GameView;
 import com.txg.scrabble.view.PlayerRoomFrame;
 import com.txg.scrabble.view.PlayersList;
 
@@ -99,15 +101,30 @@ public class DataOperations {
 
 	public void RStartGame(JSONObject object) {
 		// TODO Auto-generated method stub
-		
+		ArrayList<User> list=new ArrayList<User>();
+		char[][] characters=new char[20][20];
 		try {
+			JSONArray playerList=object.getJSONArray("plauer_list");
+			for (int j = 0; j < playerList.length(); j++) {
+				JSONObject temp=playerList.getJSONObject(j);
+				User user=new User();
+				user.setId(temp.getInt("player_id"));
+				user.setScore(temp.getInt("player_score"));
+				user.setUserName(temp.getString("player_username"));
+				list.add(user);
+			}
+			if (Config.gameStartClick==true) {
+				GameView gameView=new GameView(list);	
+				Config.gameStartClick=false;
+			}
 			JSONArray array = object.getJSONArray("game_state");
 			for(int i=0;i<array.length();i++){
 				JSONArray chars=array.getJSONArray(i);
 				for (int j = 0; j < chars.length(); j++) {
-					System.out.print(chars.get(j));
+					characters[i][j]= chars.getString(j).charAt(0);
 				}
-				System.out.println();
+				GameView.gameView.gamePanel.setCharacters(characters);
+				GameView.gameView.gamePanel.repaint();
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
