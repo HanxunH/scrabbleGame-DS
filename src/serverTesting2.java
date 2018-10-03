@@ -7,7 +7,7 @@ import java.net.Socket;
 import org.json.*;
 import java.io.*;
 
-public class serverTesting {
+public class serverTesting2 {
     public static String address = "localhost";
     public static int port = 6666;
     public static Socket socket;
@@ -21,19 +21,20 @@ public class serverTesting {
             e.printStackTrace();
         }
         map.put("operation","ADDPLAYER");
-        map.put("player_username","yeezy");
+        map.put("player_username","test2");
         sendRequest(map);
-        map.put("operation","CREATEROOM");
-        map.put("player_id","0");
+        map.put("operation","JOINROOM");
+        map.put("player_room_id","0");
+        map.put("player_id","1");
         sendRequest(map);
-        map.put("operation","LISTROOM");
-        map.put("player_id","0");
+        map.put("operation","READY");
+        map.put("player_id","1");
         sendRequest(map);
         map.put("operation","READY");
         map.put("player_id","0");
         sendRequest(map);
         try{
-            Thread.sleep(500000);
+            Thread.sleep(100000);
         }catch (Exception e){
 
         }
