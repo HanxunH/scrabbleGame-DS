@@ -104,6 +104,7 @@ public class PlayerRoomFrame extends JFrame implements WindowListener,ActionList
 			e1.printStackTrace();
 		}
 		MessageController.controller.sendMessage(object);
+		Config.inRoom=false;
 	}
 
 	@Override

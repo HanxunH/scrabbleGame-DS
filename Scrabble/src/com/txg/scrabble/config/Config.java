@@ -13,4 +13,5 @@ public class Config {
 	public static User user=new User();
 	public static Vector<Room> roomList=new Vector<Room>();
 	public static boolean gameStartClick=true;
+	public static boolean inRoom=false;
 }

@@ -37,13 +37,12 @@ public class LoginFrame extends JFrame implements ActionListener{
 	JTextField portInput = null;
 
 	JButton login = null;
-	JButton regist = null;
 	JButton test=null;
 	JPanel southContent = null;
 
 	public LoginFrame() {
 		// TODO Auto-generated constructor stub
-		logo = new JLabel(new ImageIcon("images/logo.png"));
+		logo = new JLabel(new ImageIcon(this.getClass().getResource("/images/logo.png")));
 
 		usernameLabel = new JLabel("username :", JLabel.CENTER);
 		usernameLabel.setBounds(10, 15, 100, 35);
@@ -73,17 +72,14 @@ public class LoginFrame extends JFrame implements ActionListener{
 		centerContent.add(portInput);
 		centerContent.setBorder(new LineBorder(Color.GRAY, 1));
 
-		regist = new JButton("regist");
 		login = new JButton("login");
 		test=new JButton("test Connection");
 		
-		regist.addActionListener(this);
 		login.addActionListener(this);
 		test.addActionListener(this);
 		
-		southContent = new JPanel(new FlowLayout());
+		southContent = new JPanel(new FlowLayout(FlowLayout.CENTER,100,10));
 		southContent.add(test);
-		southContent.add(regist);
 		southContent.add(login);
 
 		this.setLayout(new BorderLayout());
@@ -129,8 +125,6 @@ public class LoginFrame extends JFrame implements ActionListener{
 				controller.sendMessage(object);
 				this.dispose();
 			}
-		}else if(e.getSource()==regist){
-			
 		}
 	}
 }

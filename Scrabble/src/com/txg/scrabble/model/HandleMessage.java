@@ -1,5 +1,7 @@
 package com.txg.scrabble.model;
 
+import javax.swing.JOptionPane;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,7 +26,7 @@ public class HandleMessage {
 
 			switch (code) {
 			case 200:
-				System.out.println(object);
+				//System.out.println(object);
 				operations.RAddPlayer(object);
 				break;
 			case 201:

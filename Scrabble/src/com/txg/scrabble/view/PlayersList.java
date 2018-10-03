@@ -26,6 +26,7 @@ import com.txg.scrabble.config.Config;
 import com.txg.scrabble.model.MessageController;
 
 public class PlayersList extends JFrame{
+	public static PlayersList playersList;
 	private JScrollPane listScrollPane;
 	private JScrollPane list1ScrollPane;
 	public static JList list = new JList();
@@ -34,24 +35,26 @@ public class PlayersList extends JFrame{
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					PlayersList window = new PlayersList();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					PlayersList window = new PlayersList();
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the application.
 	 */
 	public PlayersList() {
+		playersList=this;
 		initialize();
 		this.setVisible(true);
+		
 		
 	}
 
@@ -59,7 +62,6 @@ public class PlayersList extends JFrame{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
 		this.setBounds(100, 100, 450, 300);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -96,15 +98,17 @@ public class PlayersList extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				JSONObject object=new JSONObject();
-				try {
-					object.put("operation", "CREATEROOM");
-					object.put("player_id", Config.user.getId());
-				} catch (JSONException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				if (Config.inRoom==false) {
+					JSONObject object=new JSONObject();
+					try {
+						object.put("operation", "CREATEROOM");
+						object.put("player_id", Config.user.getId());
+					} catch (JSONException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					MessageController.controller.sendMessage(object);					
 				}
-				MessageController.controller.sendMessage(object);
 			}
 		});
 
@@ -119,7 +123,7 @@ public class PlayersList extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				if (room_id!=-1) {
+				if (room_id!=-1 && Config.inRoom==false) {
 					PlayerRoomFrame frame=new PlayerRoomFrame();
 					JSONObject object=new JSONObject();
 					try {
@@ -130,7 +134,8 @@ public class PlayersList extends JFrame{
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					MessageController.controller.sendMessage(object);					
+					MessageController.controller.sendMessage(object);
+					Config.inRoom=true;
 				}
 			}
 		});
@@ -175,7 +180,7 @@ public class PlayersList extends JFrame{
 					int[] index = list_1.getSelectedIndices();
 					ListModel listModel = list_1.getModel();
 					for (int i : index) {
-						room_id=i;
+						room_id=Integer.parseInt(((String)listModel.getElementAt(i)).split("     ")[0]);
 					}					
 				}
 

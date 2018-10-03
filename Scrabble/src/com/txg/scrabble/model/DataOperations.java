@@ -3,6 +3,8 @@ package com.txg.scrabble.model;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,11 +29,12 @@ public class DataOperations {
 			e.printStackTrace();
 		}
 		MessageController.controller.sendMessage(listRoom);
+		PlayersList.playersList.setTitle(Config.user.getUserName());
 	}
 
 	public void RListRoom(JSONObject object) {
 		try {
-			Vector<Integer> roomList = new Vector<Integer>();
+			Vector<String> roomList = new Vector<String>();
 			Config.roomList.removeAllElements();
 			JSONArray array = object.getJSONArray("room_list");
 			for (int i = 0; i < array.length(); i++) {
@@ -41,7 +44,7 @@ public class DataOperations {
 				room.setRoomAvaliableSpot(temp.getInt("room_avaliable_spot"));
 				room.setRoomIsGameStarted(temp.getBoolean("room_is_game_started"));
 				Config.roomList.add(room);
-				roomList.add(room.getRoomId());
+				roomList.add(room.getRoomId()+"     "+room.getRoomAvaliableSpot()+"'s left     "+room.isRoomIsGameStarted());
 			}
 			PlayersList.list_1.setListData(roomList);
 		} catch (JSONException e) {
@@ -103,8 +106,10 @@ public class DataOperations {
 		// TODO Auto-generated method stub
 		ArrayList<User> list=new ArrayList<User>();
 		char[][] characters=new char[20][20];
+		int maxScore=0;
+		String winner="";
 		try {
-			JSONArray playerList=object.getJSONArray("plauer_list");
+			JSONArray playerList=object.getJSONArray("player_list");
 			for (int j = 0; j < playerList.length(); j++) {
 				JSONObject temp=playerList.getJSONObject(j);
 				User user=new User();
@@ -112,6 +117,16 @@ public class DataOperations {
 				user.setScore(temp.getInt("player_score"));
 				user.setUserName(temp.getString("player_username"));
 				list.add(user);
+				if (temp.getInt("player_score")>=maxScore) {
+					maxScore=temp.getInt("player_score");
+					winner=temp.getString("player_username");
+				}
+			}
+			if (object.getBoolean("is_started")==false) {
+				Config.gameStartClick=true;
+				JOptionPane.showMessageDialog(null, "Game Over, the winner is "+winner);
+				GameView.gameView.dispose();
+				return;
 			}
 			if (Config.gameStartClick==true) {
 				GameView gameView=new GameView(list);	
@@ -126,6 +141,8 @@ public class DataOperations {
 				GameView.gameView.gamePanel.setCharacters(characters);
 				GameView.gameView.gamePanel.repaint();
 			}
+			int nextId=object.getInt("next_action_user_id");
+			GameView.gameView.updateInfomation(list,nextId);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
