@@ -104,7 +104,7 @@ public class scrabbleGame {
         int rowLowerBound = row;
         int rowHigherBound = row;
         int columnLowerBound = column;
-        int columnHigherLowerBound = column;
+        int columnHigherBound = column;
 
         for(int i=row; i<gameStateRow;i++){
             rowHigherBound = i;
@@ -120,7 +120,7 @@ public class scrabbleGame {
         }
 
         for(int i=column; i<gameStateColumn;i++){
-            columnHigherLowerBound = i;
+            columnHigherBound = i;
             if(gameState[i][row] == ' '){
                 break;
             }
@@ -131,21 +131,25 @@ public class scrabbleGame {
                 break;
             }
         }
-        String rowWord = "";
-        String columnWord = "";
-        for(int i=rowLowerBound;i<rowHigherBound;i++){
-            rowWord = rowWord + gameState[column][i];
+        String rowWord = new String();
+        String columnWord = new String();
+        for(int i=rowLowerBound;i<rowHigherBound+1;i++){
+            if(gameState[column][i]!=' '){
+                rowWord = rowWord + gameState[column][i];
+            }
         }
-        for(int i=columnLowerBound;i<columnHigherLowerBound;i++){
-            columnWord = columnWord + gameState[i][row];
+        for(int i=columnLowerBound;i<columnHigherBound+1;i++){
+            if(gameState[i][row]!=' '){
+                columnWord = columnWord + gameState[i][row];
+            }
         }
         if(rowWord.length()>0){
             words.add(rowWord);
         }
-        if(columnWord.length()>1){
+        if(columnWord.length()>0){
             words.add(columnWord);
         }
-        System.out.println("New Words! row: " + rowWord + " Column: " + columnWord);
+//        System.out.println("New Words! row: " + rowWord + " Column: " + columnWord);
         return words;
     }
 
@@ -215,9 +219,18 @@ public class scrabbleGame {
         /* Update the turn */
         this.incrementTheTurn();
         ArrayList<String> temp = this.getListOfWordsFromGameState(column,row);
-        for(int i=0; i<temp.size(); i++){
-            calculateAndSetScore(temp.get(i), this.getPlayeObject(playerID));
+        /* For the Demo */
+        int maxScore = 0;
+//        System.out.println(temp);
+        for(int i=0; i<temp.size();i++){
+//            System.out.print(temp.get(i));
+//            System.out.print(temp.get(i).length());
+            if(temp.get(i).length() > maxScore){
+                maxScore = temp.get(i).length();
+            }
         }
+//        System.out.println("MaxScore: " + String.valueOf(maxScore));
+        player.setScore(player.getScore() + maxScore);
         return temp;
     }
 
@@ -273,15 +286,10 @@ public class scrabbleGame {
             game.addPlayer("test",0);
             game.addPlayer("test",1);
             game.startGame();
-            game.playerAddCharacter(0,0,'a',0);
-            System.out.println(game.getPlayerScore(0));
-            game.playerPassThisTurn(1);
-            game.playerAddCharacter(0,1,'s',0);
-            game.playerAddCharacter(1,1,'s',1);
-            game.playerAddCharacter(1,2,'d',0);
-            System.out.println(game.getPlayerScore(0));
-            ArrayList<String> test = game.playerAddCharacter(0,2,'d',1);
-            System.out.println(test);
+            for(int i=0;i<20;i++){
+                game.playerAddCharacter(0,i,(char)((int)'a'+i),0);
+                game.playerPassThisTurn(1);
+            }
             game.printGameState();
         }catch (Exception e){
             game.logger.severe(e.getMessage());
