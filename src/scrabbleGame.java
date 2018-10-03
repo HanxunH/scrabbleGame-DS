@@ -139,13 +139,13 @@ public class scrabbleGame {
         for(int i=columnLowerBound;i<columnHigherLowerBound;i++){
             columnWord = columnWord + gameState[i][row];
         }
-        if(rowWord.length()>1){
+        if(rowWord.length()>0){
             words.add(rowWord);
         }
         if(columnWord.length()>1){
             words.add(columnWord);
         }
-
+        System.out.println("New Words! row: " + rowWord + " Column: " + columnWord);
         return words;
     }
 
@@ -214,7 +214,11 @@ public class scrabbleGame {
         player.lastAction = gameAction.ADD;
         /* Update the turn */
         this.incrementTheTurn();
-        return this.getListOfWordsFromGameState(column,row);
+        ArrayList<String> temp = this.getListOfWordsFromGameState(column,row);
+        for(int i=0; i<temp.size(); i++){
+            calculateAndSetScore(temp.get(i), this.getPlayeObject(playerID));
+        }
+        return temp;
     }
 
     public void approveWord(String word, int playerID) throws scrabbleGameException{

@@ -80,6 +80,7 @@ public class scrabbleGameServer {
 
         public void updateGameRoomInfoToPlayers(){
             JSONObject json = new JSONObject();
+            System.out.println("updateGameRoomInfoToPlayers");
             try {
                 json.put("update", true);
                 json.put("update_type", "game_room");
@@ -94,7 +95,9 @@ public class scrabbleGameServer {
                 for(int i=0; i < connectedPlayers.size(); i++){
                     JSONObject playerJsonObject = new JSONObject();
                     // Update the score
-                    connectedPlayers.get(i).score = this.game.getPlayerScore(connectedPlayers.get(i).userID);
+                    if(this.game.isStarted()){
+                        connectedPlayers.get(i).score = this.game.getPlayerScore(connectedPlayers.get(i).userID);
+                    }
                     playerJsonObject.put("player_id", connectedPlayers.get(i).userID);
                     playerJsonObject.put("player_username", connectedPlayers.get(i).username);
                     playerJsonObject.put("is_ready", connectedPlayers.get(i).isPlayerReady);
@@ -160,7 +163,10 @@ public class scrabbleGameServer {
                 JSONArray playerList = new JSONArray();
     			for(int i=0;i<this.connectedPlayers.size();i++) {
                     JSONObject player=new JSONObject();
-    				int id = connectedPlayers.get(i).userID;
+                    if(this.game.isStarted()){
+                        connectedPlayers.get(i).score = this.game.getPlayerScore(connectedPlayers.get(i).userID);
+                    }
+                    int id = connectedPlayers.get(i).userID;
     				String username = connectedPlayers.get(i).username;
     				int score = connectedPlayers.get(i).score;
                     player.put("player_id",id);
