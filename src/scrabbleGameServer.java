@@ -50,6 +50,8 @@ public class scrabbleGameServer {
         public ArrayList<connectedPlayerClient> connectedPlayers = new ArrayList<>();
         public scrabbleGame game;
         public int id;
+        public int firstWordCount;
+        public int secondWordCount;
         public gameRoom() {
             this.game = new scrabbleGame();
         }
@@ -573,9 +575,11 @@ public class scrabbleGameServer {
                     			int row = json.getInt("row");
                     			String c = json.getString("character");
                     			char character = c.charAt(0);
-                    			ArrayList<String> list = gameRoom.game.playerAddCharacter(column, row, character, this.clientObject.userID);
-                    		    gameRoom.askPlayersToVote(list, this.clientObject.userID);
+                    			ArrayList<String> list = gameRoom.game.playerAddCharacter(column, row, character, this.clientObject.userID);                    		    
                     			gameRoom.updateGameStateToPlayers();
+                                gameRoom.firstWordCount = 0;
+                    			gameRoom.secondWordCount = 0;
+                                gameRoom.askPlayersToVote(list, this.clientObject.userID);
                                 responseJson.put("response_code", 207);
                             }else {
                     			jsonErrorHandler("game is not started", 407, responseJson);
@@ -601,26 +605,27 @@ public class scrabbleGameServer {
                         if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
                     		gameRoom gameRoom = this.clientObject.gameRoomObject;
                     		 if(gameRoom.game.isStarted()) {
-                    			 JSONArray words = json.getJSONArray("words");
-                    			 for(int i = 0; i< words.length(); i++) {
-                    				 int agreeClient = 0;
-                    				 for(int j=0; j<this.clientObject.gameRoomObject.connectedPlayers.size(); j++) {
-                                    	 if(json.getBoolean("isAgree") == true) {
-                                        	 agreeClient += 1;
-                                    	 }
-                                         else {
-                                             break;
-                                         }
-                                     }
-                                     if(agreeClient == this.clientObject.gameRoomObject.connectedPlayers.size()){    
-                                    	 //没写完 要看从client传来的json是怎么样的
-                                    	 String word = json.getString("vote_word");
-                                         int wordOwnerPlayerID = json.getInt("vote_word_owner");
-                                         
-                                         this.clientObject.gameRoomObject.game.approveWord(word, wordOwnerPlayerID);                                        
-                                     }                                              				 
-                    			 }             
-                    			 gameRoom.updateGameStateToPlayers();                                         
+                    			 String word1 = json.getString("word1");
+                                 String word2 = json.getString("word2");
+                                 int wordOwnerPlayerID = json.getInt("vote_word_owner");
+                                 Boolean firstWord = json.getBoolean("first_word");
+                                 Boolean secondWord = json.getBoolean("second_word");
+                                 if(firstWord)
+                                    gameRoom.firstWordCount++;
+                                 if(secondWord)
+                                    gameRoom.secondWordCount++;
+                                 if(gameRoom.firstWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()-1 && gameRoom.secondWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()-1) {
+                                    if(word1.length() >= word2.length()) {
+                                        this.clientObject.gameRoomObject.game.approveWord(word1, wordOwnerPlayerID);
+                                    }else {
+                                        this.clientObject.gameRoomObject.game.approveWord(word2, wordOwnerPlayerID);
+                                    }                       
+                                 }else if(gameRoom.firstWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()-1 && gameRoom.secondWordCount != this.clientObject.gameRoomObject.connectedPlayers.size()-1){
+                                    this.clientObject.gameRoomObject.game.approveWord(word1, wordOwnerPlayerID);
+                                 }else if(gameRoom.firstWordCount != this.clientObject.gameRoomObject.connectedPlayers.size()-1 && gameRoom.secondWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()-1) {
+                                    this.clientObject.gameRoomObject.game.approveWord(word2, wordOwnerPlayerID);
+                                 }         
+                                 gameRoom.updateGameStateToPlayers();                                        
                              }else {
                                  jsonErrorHandler("game is not started", 407, responseJson);
                              }	 
