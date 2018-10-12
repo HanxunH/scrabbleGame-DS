@@ -46,4 +46,14 @@ public class User {
 		this.state = state;
 	}
 
+	public User(String userName, int id, int score) {
+		super();
+		this.userName = userName;
+		this.id = id;
+		this.score = score;
+	}
+	public User() {
+		// TODO Auto-generated constructor stub
+	}
+	
 }

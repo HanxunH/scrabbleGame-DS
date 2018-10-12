@@ -148,4 +148,16 @@ public class DataOperations {
 			e.printStackTrace();
 		}
 	}
+	public void RVote(JSONObject object){
+		try {
+			JSONArray array= object.getJSONArray("words");
+			String word1=array.getString(0);
+			String word2=array.getString(1);
+			GameView.gameView.showVoteDialog(GameView.gameView, GameView.gameView, word1, word2);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 }

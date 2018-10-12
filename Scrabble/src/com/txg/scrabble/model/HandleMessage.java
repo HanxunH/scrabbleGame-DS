@@ -45,7 +45,8 @@ public class HandleMessage {
 			case 206:
 				operations.RChangeButton(object);
 				break;
-			case 207:
+			case 240:
+				operations.RVote(object);
 				break;
 			case 208:
 				break;

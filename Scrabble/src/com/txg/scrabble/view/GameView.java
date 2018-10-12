@@ -1,7 +1,11 @@
 package com.txg.scrabble.view;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,8 +14,11 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -144,10 +151,8 @@ public class GameView extends JFrame implements KeyListener, ActionListener {
 
 	public static void main(String[] args) {
 		ArrayList<User> list = new ArrayList<User>();
-		list.add(new User());
-		list.add(new User());
-		list.add(new User());
-		list.add(new User());
+		list.add(new User("DENG",0,100));
+		list.add(new User("YANG",1,200));
 		GameView gameView = new GameView(list);
 	}
 
@@ -206,6 +211,51 @@ public class GameView extends JFrame implements KeyListener, ActionListener {
 				}
 			}
 		}
+	}
+	public void showVoteDialog(Frame owner, Component parentComponent,final String label1,final String label2){
+		JDialog dialog=new JDialog(owner,"Plese Select",true);
+		dialog.setSize(250,150);
+		dialog.setResizable(false);
+		dialog.setLocationRelativeTo(parentComponent);
+		JLabel word1=new JLabel(label1,JLabel.CENTER);
+		JLabel word2=new JLabel(label2,JLabel.CENTER);
+		final JCheckBox checkWord1=new JCheckBox("VOTE");
+		final JCheckBox checkWord2=new JCheckBox("VOTE");
+		JPanel container=new JPanel(new BorderLayout());
+		JPanel grid=new JPanel(new GridLayout(2,2));
+		grid.add(word1);
+		grid.add(checkWord1);
+		grid.add(word2);
+		grid.add(checkWord2);
+		container.add(grid,BorderLayout.CENTER);
+		
+		JButton submit=new JButton("Submit");
+		submit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				JSONObject object=new JSONObject();
+				try {
+					object.put("operation", "VOTE");
+					object.put("player_id", Config.user.getId());
+					object.put("word1", label1);
+					object.put("first_word", checkWord1.isSelected());
+					object.put("word1", label2);
+					object.put("second_word", checkWord2.isSelected());
+					MessageController.controller.sendMessage(object);
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		container.add(submit,BorderLayout.SOUTH);
+		
+		dialog.setContentPane(container);
+		dialog.setVisible(true);
+
 	}
 
 }
