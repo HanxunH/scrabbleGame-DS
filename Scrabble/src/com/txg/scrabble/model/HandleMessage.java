@@ -1,11 +1,7 @@
 package com.txg.scrabble.model;
 
-import javax.swing.JOptionPane;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.txg.scrabble.config.Config;
 
 public class HandleMessage {
 
@@ -18,7 +14,7 @@ public class HandleMessage {
 	}
 
 	public void checkMessage() {
-		System.out.println(object.toString());
+		System.out.println("收到:  "+object.toString());
 		DataOperations operations=new DataOperations();
 		int code = 0;
 		try {
@@ -56,6 +52,11 @@ public class HandleMessage {
 			case 225:
 				operations.RStartGame(object);
 				break;
+			case 220:
+				operations.RPlayerList(object);
+				break;
+			case 234:
+				operations.RGetInvitation(object);
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block

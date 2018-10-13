@@ -181,6 +181,7 @@ public class GameView extends JFrame implements KeyListener, ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
+		showVoteDialog(this, this, "word1", "word2", 10);
 		if (e.getSource() == agree) {
 			System.out.println("agree");
 		} else if (e.getSource() == deny) {
@@ -212,8 +213,8 @@ public class GameView extends JFrame implements KeyListener, ActionListener {
 			}
 		}
 	}
-	public void showVoteDialog(Frame owner, Component parentComponent,final String label1,final String label2){
-		JDialog dialog=new JDialog(owner,"Plese Select",true);
+	public void showVoteDialog(Frame owner, Component parentComponent,final String label1,final String label2,final int id){
+		final JDialog dialog=new JDialog(owner,"Plese Select",true);
 		dialog.setSize(250,150);
 		dialog.setResizable(false);
 		dialog.setLocationRelativeTo(parentComponent);
@@ -239,10 +240,12 @@ public class GameView extends JFrame implements KeyListener, ActionListener {
 				try {
 					object.put("operation", "VOTE");
 					object.put("player_id", Config.user.getId());
+					object.put("vote_owner_id", id);
 					object.put("word1", label1);
 					object.put("first_word", checkWord1.isSelected());
-					object.put("word1", label2);
+					object.put("word2", label2);
 					object.put("second_word", checkWord2.isSelected());
+					dialog.dispose();
 					MessageController.controller.sendMessage(object);
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block

@@ -31,7 +31,7 @@ public class MessageController extends Thread {
 
 	public void sendMessage(JSONObject object) {
 		try {
-			System.out.println(object.toString());
+			System.out.println("发送:  "+object.toString());
 			output.write(object.toString().getBytes());
 			output.flush();
 			output.write("</STOP>".getBytes());

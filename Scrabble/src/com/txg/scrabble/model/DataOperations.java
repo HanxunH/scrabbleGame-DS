@@ -28,6 +28,7 @@ public class DataOperations {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		MessageController.controller.sendMessage(listRoom);
 		PlayersList.playersList.setTitle(Config.user.getUserName());
 	}
@@ -47,6 +48,14 @@ public class DataOperations {
 				roomList.add(room.getRoomId()+"     "+room.getRoomAvaliableSpot()+"'s left     "+room.isRoomIsGameStarted());
 			}
 			PlayersList.list_1.setListData(roomList);
+			JSONObject listPlayer=new JSONObject();
+			try {
+				listPlayer.put("operation", "LISTCLIENTS");
+				listPlayer.put("player_id", Config.user.getId());
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			MessageController.controller.sendMessage(listPlayer);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -59,11 +68,34 @@ public class DataOperations {
 		try {
 			frame.room.setRoomId(object.getInt("player_room_id"));
 			frame.room.players.add(Config.user);
+			Config.inRoom=true;
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+	}
+	public void RGetInvitation(JSONObject object){
+		JSONObject reply=new JSONObject();
+		// A invites B
+		try {
+			int invitorId=object.getInt("invitor_id");
+			int result=JOptionPane.showConfirmDialog(null, invitorId+" invites you to game !", "Invitation",JOptionPane.YES_NO_OPTION);
+			reply.put("operation", "INVITEJOIN");
+			reply.put("player_id_b", Config.user.getId());
+			reply.put("player_id_a", invitorId);
+			if (result==0) {
+				//YES
+				reply.put("accept", true);
+			}else{
+				//NO
+				reply.put("accept", false);
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		MessageController.controller.sendMessage(reply);
 	}
 
 	public void RUpdatePlayerInRoom(JSONObject object) {
@@ -151,13 +183,35 @@ public class DataOperations {
 	public void RVote(JSONObject object){
 		try {
 			JSONArray array= object.getJSONArray("words");
+			int ownerid=object.getInt("word_owner_id");
 			String word1=array.getString(0);
 			String word2=array.getString(1);
-			GameView.gameView.showVoteDialog(GameView.gameView, GameView.gameView, word1, word2);
+			GameView.gameView.showVoteDialog(GameView.gameView, GameView.gameView, word1, word2, ownerid);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+	}
+	public void RPlayerList(JSONObject object){
+		try {
+			Vector<String> playerList = new Vector<String>();
+			Config.roomList.removeAllElements();
+			JSONArray array = object.getJSONArray("connected_client_list");
+			for (int i = 0; i < array.length(); i++) {
+				JSONObject temp = array.getJSONObject(i);
+				int id=temp.getInt("player_id");
+				boolean inRoom=temp.getBoolean("player_is_in_room");
+				if (inRoom==true) {
+					playerList.add(id+"     UNAVAILABLE");
+				}else{
+					playerList.add(id+"       AVAILABLE");					
+				}
+			}
+			PlayersList.list.setListData(playerList);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
