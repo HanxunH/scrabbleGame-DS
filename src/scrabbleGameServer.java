@@ -246,6 +246,15 @@ public class scrabbleGameServer {
         return true;
     }
 
+    private static connectedPlayerClient getConnectedPlayerClientObject(int id){
+        for(int i = 0; i < clientList.size(); i++){
+            if(clientList.get(i).userID == id){
+                return clientList.get(i);
+            }
+        }
+        return null;
+    }
+
     private static void setServerBaseOnConfig(String filePath) {
         try {
             JSONParser parser = new JSONParser();
@@ -262,6 +271,28 @@ public class scrabbleGameServer {
             }
         } catch (Exception e) {
             logger.severe(e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+    }
+
+    public static void invitePlayerToRoom(int inviteID, int ownerID, int roomID){
+        JSONObject json = new JSONObject();
+        try {
+            connectedPlayerClient invitePlayerObject = getConnectedPlayerClientObject(inviteID);
+            if(invitePlayerObject == null){
+                logger.severe("invitePlayerToRoom: No such user! ID: " + String.valueOf(inviteID));
+                return;
+            }
+            json.put("response_code", 250);
+            json.put("update", true);
+            json.put("update_type", "invite");
+            json.put("inviter_id", ownerID);
+            json.put("room_id", roomID);
+            String responseJSONString = json.toString();
+            DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream( invitePlayerObject.socket.getOutputStream()));
+            outputStream.writeUTF(responseJSONString);
+            outputStream.flush();
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -550,18 +581,26 @@ public class scrabbleGameServer {
                      			if(this.clientObject.gameRoomObject.availableSpot() <= 0){
                                     jsonErrorHandler("Room is full!", 405, responseJson);
                      			}else{
-                     			
+                     			    if(json.has("invite_target_id") && getConnectedPlayerClientObject(json.getInt("invite_target_id"))!= null ){
+                                        connectedPlayerClient invite_target_player = getConnectedPlayerClientObject(json.getInt("invite_target_id"));
+                     			        responseJson.put("invitor_id",this.clientObject.userID);
+                                        responseJson.put("invitor_name",this.clientObject.username);
+                                        responseJson.put("response_code", 234);
+                                        invitePlayerToRoom(invite_target_player.userID, this.clientObject.userID, this.clientObject.roomID);
+                                    }else{
+                                        jsonErrorHandler("No Such User!", 404, responseJson);
+                                    }
                      				//int invitorID = json.getInt("player_id");
                      				//this.clientObject.gameRoomObject.connectedPlayers.add(invitor);
                      				//int roomID = this.clientObject.gameRoomObject.id;                                 
-                                    responseJson.put("invitor_id",this.clientObject.userID);
-                                    responseJson.put("invitor_name",this.clientObject.username);
+                                    //responseJson.put("invitor_id",this.clientObject.userID);
+                                    //responseJson.put("invitor_name",this.clientObject.username);
                                     //responseJson.put("player_room_id",invitor.roomID);
                                     //responseJson.put("player_is_in_game_room",invitor.isInRoom);
-                                    responseJson.put("response_code", 234);
+                                    //responseJson.put("response_code", 234);
                                     //this.clientObject.gameRoomObject.updateGameRoomInfoToPlayers();
-                                    //updateRoomListToAllPlayers();             				
-                     			}                     			
+                                    //updateRoomListToAllPlayers();
+                     			}
                      		}else {
                      			jsonErrorHandler("Player is not in room", 444, responseJson);
                      		}
@@ -571,17 +610,20 @@ public class scrabbleGameServer {
                     }else if(operationRequestString.equals("INVITEJOIN")){
                    	 //TODO: invite users to join the room
                    	 	if(json.has("player_id_a") && json.getInt("player_id_a") == clientObject.userID){
-                    		//int roomId = this.clientObject.gameRoomObject.id;	
-                   	 		
+                    		//int roomId = this.clientObject.gameRoomObject.id;
                     		connectedPlayerClient playerIDA = getConnectedPlayerClientObject(json.getInt("player_id_a"));
-                    		connectedPlayerClient playerIDB = getConnectedPlayerClientObject(json.getInt("player_id_b"));
-                    		playerIDA.gameRoomObject.connectedPlayers.add(playerIDB);               		
-                    		playerIDB.gameRoomObject.id = playerIDA.roomID;
-                    		playerIDB.gameRoomObject = playerIDA.gameRoomObject;
-                    		playerIDB.isInRoom = true;                          
-                    		playerIDB.gameRoomObject.updateGameRoomInfoToPlayers();
-                            updateRoomListToAllPlayers(); 
-                            responseJson.put("response_code", 235);
+                            connectedPlayerClient playerIDB = getConnectedPlayerClientObject(json.getInt("player_id_b"));
+                            if(playerIDA == null || playerIDB == null){
+                                jsonErrorHandler("No Such user!", 404, responseJson);
+                            }else{
+                                playerIDA.gameRoomObject.connectedPlayers.add(playerIDB);
+                                //playerIDB.gameRoomObject.id = playerIDA.roomID;
+                                playerIDB.gameRoomObject = playerIDA.gameRoomObject;
+                                playerIDB.isInRoom = true;
+                                playerIDB.gameRoomObject.updateGameRoomInfoToPlayers();
+                                updateRoomListToAllPlayers();
+                                responseJson.put("response_code", 235);
+                            }
                     	} 
                    }else if(operationRequestString.equals("READY")){
                         if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
