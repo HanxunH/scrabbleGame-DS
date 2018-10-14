@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 import com.txg.scrabble.config.Config;
 import com.txg.scrabble.model.LevelCalculation;
-
+// One of a sub-frame of the game frame
 public class UserPanelHorizontal extends JPanelWrapper{
 	
 	private int width=0;

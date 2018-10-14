@@ -23,7 +23,7 @@ import com.txg.scrabble.config.Config;
 import com.txg.scrabble.domain.Room;
 import com.txg.scrabble.domain.User;
 import com.txg.scrabble.model.MessageController;
-
+// This is a room class, which will show the player and whether a player is ready now
 public class PlayerRoomFrame extends JFrame implements WindowListener,ActionListener {
 
 	public static PlayerRoomFrame playerRoomFrame = null;
@@ -67,14 +67,14 @@ public class PlayerRoomFrame extends JFrame implements WindowListener,ActionList
 		this.setVisible(true);
 		this.addWindowListener(this);
 	}
-
+	// Clear the list
 	public void clearStatus(){
 		for(int i=0;i<labels.length;i++){
 			labels[i].setText("");
 			states[i].setText("");
 		}
 	}
-		
+	// Then write the new data	
 	public void updateStatus() {
 		clearStatus();
 		for (int i = 0; i < list.size(); i++) {
@@ -97,7 +97,7 @@ public class PlayerRoomFrame extends JFrame implements WindowListener,ActionList
 		// TODO Auto-generated method stub
 
 	}
-
+	// If the user close the room frame, it will send LEAVEROOM request to the server
 	@Override
 	public void windowClosing(WindowEvent e) {
 		// TODO Auto-generated method stub
@@ -143,7 +143,7 @@ public class PlayerRoomFrame extends JFrame implements WindowListener,ActionList
 		// TODO Auto-generated method stub
 
 	}
-
+	// Change the user status.
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub

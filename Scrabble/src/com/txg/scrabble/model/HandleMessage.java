@@ -14,9 +14,9 @@ public class HandleMessage {
 		this.object = object;
 		checkMessage();
 	}
-
+	//Invoke different methods according to the response code from the server
 	public void checkMessage() {
-		System.out.println("收到:  " + object.toString());
+		System.out.println("Get:  " + object.toString());
 		DataOperations operations = new DataOperations();
 		int code = 0;
 		try {
@@ -32,10 +32,6 @@ public class HandleMessage {
 				case 201:
 					operations.RCreateRoom(object);
 					break;
-				case 202:
-					break;
-				case 203:
-					break;
 				case 204://
 					operations.RListRoom(object);
 					break;
@@ -47,8 +43,6 @@ public class HandleMessage {
 					break;
 				case 240:
 					operations.RVote(object);
-					break;
-				case 208:
 					break;
 				case 230:
 					operations.RUpdatePlayerInRoom(object);

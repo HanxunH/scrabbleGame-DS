@@ -28,7 +28,7 @@ import org.json.JSONObject;
 import com.txg.scrabble.config.Config;
 import com.txg.scrabble.domain.User;
 import com.txg.scrabble.model.MessageController;
-
+// The main class of the game
 public class GameView extends JFrame implements KeyListener, ActionListener, WindowListener {
 
 	public static GameView gameView = null;
@@ -66,6 +66,7 @@ public class GameView extends JFrame implements KeyListener, ActionListener, Win
 				break;
 			}
 		}
+		//Generate the frame according to the number of players.
 		if (userList.size() == 2) {
 
 			userPanels[0] = new UserPanelHorizontal(0, screenSize * 7 / 10, screenSize * 3 / 20,
@@ -146,7 +147,7 @@ public class GameView extends JFrame implements KeyListener, ActionListener, Win
 		list.add(new User("YANG", 1, 200));
 		GameView gameView = new GameView(list);
 	}
-
+	// Type a character from the keyboard to add
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
@@ -168,7 +169,7 @@ public class GameView extends JFrame implements KeyListener, ActionListener, Win
 		// TODO Auto-generated method stub
 
 	}
-
+	// React with the PASS button
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -184,7 +185,7 @@ public class GameView extends JFrame implements KeyListener, ActionListener, Win
 			MessageController.controller.sendMessage(object);
 		}
 	}
-
+	// Update the score of a player by this method
 	public void updateInfomation(ArrayList<User> list, int nextId) {
 		for (int i = 0; i < list.size(); i++) {
 			for (int j = 0; j < list.size(); j++) {
@@ -199,7 +200,7 @@ public class GameView extends JFrame implements KeyListener, ActionListener, Win
 			}
 		}
 	}
-
+	// The vote dialog. If a player sends an ADDCHAR request, this dialog will be visiable
 	public void showVoteDialog(Frame owner, Component parentComponent, final String label1, final String label2,
 			final int id) {
 		final JDialog dialog = new JDialog(owner, "Plese Select", true);
@@ -228,7 +229,7 @@ public class GameView extends JFrame implements KeyListener, ActionListener, Win
 				// TODO Auto-generated method stub
 
 			}
-
+			// If the player close the dialog, send 'DISAGREE' to server
 			@Override
 			public void windowClosing(WindowEvent e) {
 				// TODO Auto-generated method stub
@@ -278,7 +279,7 @@ public class GameView extends JFrame implements KeyListener, ActionListener, Win
 
 		JButton submit = new JButton("Submit");
 		submit.addActionListener(new ActionListener() {
-
+			// If the player click the submission button, it will send a request to the server
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
@@ -312,7 +313,7 @@ public class GameView extends JFrame implements KeyListener, ActionListener, Win
 		// TODO Auto-generated method stub
 
 	}
-
+	// If a user close the game frame, it will send QUITGAME request
 	@Override
 	public void windowClosing(WindowEvent e) {
 		// TODO Auto-generated method stub

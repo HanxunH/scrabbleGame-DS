@@ -1,5 +1,5 @@
 package com.txg.scrabble.domain;
-
+//The domain class of the users
 public class User {
 
 	private String userName;

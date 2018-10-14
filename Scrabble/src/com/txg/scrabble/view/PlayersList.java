@@ -26,7 +26,7 @@ import org.json.JSONObject;
 
 import com.txg.scrabble.config.Config;
 import com.txg.scrabble.model.MessageController;
-
+// This class shows the player list and the room list for player to invite, join, and create 
 public class PlayersList extends JFrame{
 	public static PlayersList playersList;
 	private JScrollPane listScrollPane;

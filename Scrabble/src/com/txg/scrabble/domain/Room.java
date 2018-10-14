@@ -1,7 +1,7 @@
 package com.txg.scrabble.domain;
 
 import java.util.ArrayList;
-
+// The domain class of a room
 public class Room {
 	public ArrayList<User> players=new ArrayList<User>();
 	private int roomId;

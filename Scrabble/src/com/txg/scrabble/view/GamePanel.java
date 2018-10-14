@@ -15,7 +15,7 @@ import org.json.JSONObject;
 
 import com.txg.scrabble.config.Config;
 import com.txg.scrabble.model.MessageController;
-
+//This class extends JPanel class to draw the lines and the 400 characters
 public class GamePanel extends JPanel implements MouseListener{
 
 	private int panelSize;
@@ -33,7 +33,7 @@ public class GamePanel extends JPanel implements MouseListener{
 		drawBoard((Graphics2D) g);
 		updateCharacters((Graphics2D) g);
 	}
-
+	//Draw the grids
 	public void drawBoard(Graphics2D g){
 		//panelSize=this.getWidth();
 		blockSize=panelSize/20;
@@ -47,6 +47,7 @@ public class GamePanel extends JPanel implements MouseListener{
 		}
 		
 	}
+	//Draw the characters
 	public void updateCharacters(Graphics2D g){
 		g.setFont(new Font("Arial", Font.BOLD, panelSize/16));
 		for(int i=0;i<20;i++){
@@ -65,6 +66,7 @@ public class GamePanel extends JPanel implements MouseListener{
 		// TODO Auto-generated method stub
 		
 	}
+	//Calculate the position where the mouse click and send the ADDCHAR request to the server
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub

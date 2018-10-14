@@ -24,7 +24,7 @@ import org.json.JSONObject;
 import com.txg.scrabble.config.Config;
 import com.txg.scrabble.model.ConnectToServer;
 import com.txg.scrabble.model.MessageController;
-
+// A login frame
 public class LoginFrame extends JFrame implements ActionListener{
 	
 	public static LoginFrame loginFrame=null;
@@ -103,6 +103,7 @@ public class LoginFrame extends JFrame implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
+		//Test whether the socket is connected
 		if (e.getSource()==test) {
 			if (ConnectToServer.socket==null||!ConnectToServer.socket.isConnected()) {
 				ConnectToServer cts=new ConnectToServer(ipAddressInput.getText(),Integer.parseInt(portInput.getText()));
@@ -110,6 +111,7 @@ public class LoginFrame extends JFrame implements ActionListener{
 			}else{
 				JOptionPane.showMessageDialog(null, "Connection has already established");
 			}
+		// Add a player to the server
 		}else if(e.getSource()==login){
 			if(ConnectToServer.socket!=null && ConnectToServer.socket.isConnected()){
 				MessageController controller=new MessageController(ConnectToServer.socket);

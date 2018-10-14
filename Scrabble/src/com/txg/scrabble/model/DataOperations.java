@@ -18,10 +18,11 @@ import com.txg.scrabble.view.PlayerRoomFrame;
 import com.txg.scrabble.view.PlayersList;
 
 public class DataOperations {
-
+	// The reply of ADDPLAYER
 	public void RAddPlayer(JSONObject object) {
 		LoginFrame.loginFrame.dispose();
 		PlayersList playersList=new PlayersList();
+		// Send a request to the server to fetch the room list
 		JSONObject listRoom = new JSONObject();
 		try {
 			Config.user.setId(object.getInt("player_id"));
@@ -40,6 +41,7 @@ public class DataOperations {
 		try {
 			Vector<String> roomList = new Vector<String>();
 			Config.roomList.removeAllElements();
+			//Get the room list from the server
 			JSONArray array = object.getJSONArray("room_list");
 			for (int i = 0; i < array.length(); i++) {
 				JSONObject temp = array.getJSONObject(i);
@@ -48,8 +50,10 @@ public class DataOperations {
 				room.setRoomAvaliableSpot(temp.getInt("room_avaliable_spot"));
 				room.setRoomIsGameStarted(temp.getBoolean("room_is_game_started"));
 				Config.roomList.add(room);
+				//Add the room informations to a list
 				roomList.add(room.getRoomId()+"     "+room.getRoomAvaliableSpot()+"'s left     "+room.isRoomIsGameStarted());
 			}
+			//Apply that list to the JList component
 			PlayersList.list_1.setListData(roomList);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -61,6 +65,7 @@ public class DataOperations {
 		PlayerRoomFrame frame = new PlayerRoomFrame();
 
 		try {
+			//Create a room frame and set inRoom to true
 			frame.room.setRoomId(object.getInt("player_room_id"));
 			frame.room.players.add(Config.user);
 			Config.inRoom=true;
@@ -72,7 +77,7 @@ public class DataOperations {
 	}
 	public void RGetInvitation(JSONObject object){
 		JSONObject reply=new JSONObject();
-		// A invites B
+		// A invites B and B gets the invitation
 		try {
 			int invitorId=object.getInt("inviter_id");
 			int result=JOptionPane.showConfirmDialog(null, invitorId+" invites you to game !", "Invitation",JOptionPane.YES_NO_OPTION);
@@ -96,6 +101,7 @@ public class DataOperations {
 
 	public void RUpdatePlayerInRoom(JSONObject object) {
 		// TODO Auto-generated method stub
+		//Update the status of the players in the room.
 		JSONArray array;
 		PlayerRoomFrame.playerRoomFrame.list.removeAll(PlayerRoomFrame.playerRoomFrame.list);
 		try {
@@ -107,6 +113,7 @@ public class DataOperations {
 				user.setScore(temp.getInt("score"));
 				user.setUserName(temp.getString("player_username"));
 				user.setState(temp.getBoolean("is_ready"));
+				//Change the button text according to the status received from the server
 				if (user.getId()==Config.user.getId()) {
 					if(temp.getBoolean("is_ready")){
 						PlayerRoomFrame.playerRoomFrame.button.setText("UNREADY");
@@ -136,7 +143,8 @@ public class DataOperations {
 			e.printStackTrace();
 		}
 	}
-
+	//This method mainly focus on starting the game and updating the 400 characters from the server.
+	//Meanwhile, the score of each player also updated in this method
 	public void RStartGame(JSONObject object) {
 		// TODO Auto-generated method stub
 		ArrayList<User> list=new ArrayList<User>();
@@ -153,6 +161,7 @@ public class DataOperations {
 				user.setScore(temp.getInt("player_score"));
 				user.setUserName(temp.getString("player_username"));
 				list.add(user);
+				// Find the temperary winner from the scores.
 				if (temp.getInt("player_score")>=maxScore) {
 					maxScore=temp.getInt("player_score");
 					winner=temp.getString("player_username");
@@ -161,6 +170,7 @@ public class DataOperations {
 					flag=true;
 				}
 			}
+			// If the game is_started is false, the game is stopped
 			if (flag==true) {
 				if (object.getBoolean("is_started")==false) {
 					Config.gameStartClick=true;
@@ -173,6 +183,7 @@ public class DataOperations {
 				GameView gameView=new GameView(list);	
 				Config.gameStartClick=false;
 			}
+			// Update the games state including the next turn and scores.
 			JSONArray array = object.getJSONArray("game_state");
 			for(int i=0;i<array.length();i++){
 				JSONArray chars=array.getJSONArray(i);
@@ -189,6 +200,7 @@ public class DataOperations {
 			e.printStackTrace();
 		}
 	}
+	//This method mainly votes the two words.
 	public void RVote(JSONObject object){
 		try {
 			JSONArray array= object.getJSONArray("words");
@@ -202,6 +214,8 @@ public class DataOperations {
 		}
 		
 	}
+	
+	//Show the players list on the JList component
 	public void RPlayerList(JSONObject object){
 		try {
 			Vector<String> playerList = new Vector<String>();
