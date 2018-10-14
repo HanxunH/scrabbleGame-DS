@@ -230,7 +230,7 @@ public class scrabbleGame {
             }
         }
 //        System.out.println("MaxScore: " + String.valueOf(maxScore));
-        player.setScore(player.getScore() + maxScore);
+        //player.setScore(player.getScore() + maxScore);//暂时去掉
         return temp;
     }
 
