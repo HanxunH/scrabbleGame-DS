@@ -11,6 +11,7 @@
       <change beforePath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer$clientHandlerThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer$clientHandlerThread.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer$gameRoom.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer$gameRoom.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/scrabbleGameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/scrabbleGameServer.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -69,13 +70,13 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="16852" />
+          <entry key="java" value="16875" />
           <entry key="json" value="535" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="16852" />
+          <entry key="JAVA" value="16875" />
           <entry key="JSON" value="535" />
         </counts>
       </usages-collector>
@@ -99,8 +100,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/scrabbleGameServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="412">
-              <caret line="343" column="53" lean-forward="true" selection-start-line="343" selection-start-column="53" selection-end-line="343" selection-end-column="53" />
+            <state relative-caret-position="140">
+              <caret line="302" column="31" selection-start-line="302" selection-start-column="31" selection-end-line="302" selection-end-column="31" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="imports" expanded="true" />
@@ -122,11 +123,9 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>playerAddCharacter</find>
       <find>print</find>
       <find>ready</find>
       <find>connectedPlayers</find>
-      <find>clientList</find>
       <find>connectedPlayerClient</find>
       <find>getConnectedPlayerClientObject</find>
       <find>invitePlayerToRoom</find>
@@ -152,6 +151,8 @@
       <find>225</find>
       <find>disconnectPlayer</find>
       <find>500</find>
+      <find>clientList</find>
+      <find>updateP</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -214,7 +215,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1539499148262" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1539500153506" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Artifacts" />
@@ -354,12 +355,12 @@
       <workItem from="1538548322481" duration="1547000" />
       <workItem from="1538568523275" duration="908000" />
       <workItem from="1538607774269" duration="1114000" />
-      <workItem from="1539427521010" duration="15498000" />
+      <workItem from="1539427521010" duration="16384000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="92282000" />
+    <option name="totallyTimeSpent" value="93168000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -372,9 +373,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49608356" visible="true" weight="0.18803419" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49608356" visible="true" weight="0.18803419" />
       <window_info id="Structure" order="1" sideWeight="0.50391644" side_tool="true" weight="0.18070818" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -383,7 +383,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.18877551" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.57653064" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -585,8 +585,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scrabbleGameServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="412">
-          <caret line="343" column="53" lean-forward="true" selection-start-line="343" selection-start-column="53" selection-end-line="343" selection-end-column="53" />
+        <state relative-caret-position="140">
+          <caret line="302" column="31" selection-start-line="302" selection-start-column="31" selection-end-line="302" selection-end-column="31" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />

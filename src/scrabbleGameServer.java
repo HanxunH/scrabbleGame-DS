@@ -293,6 +293,9 @@ public class scrabbleGameServer {
             json.put("response_code", 220);
             JSONArray playerList=new JSONArray();
             for(int i=0; i < clientList.size(); i++){
+                if(clientList.get(i).isLogin == false){
+                    continue;
+                }
                 JSONObject playerJsonObject = new JSONObject();
                 playerJsonObject.put("player_id", clientList.get(i).userID);
                 playerJsonObject.put("player_is_in_room", clientList.get(i).isInRoom);
