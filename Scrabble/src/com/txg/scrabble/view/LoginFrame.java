@@ -27,6 +27,7 @@ import com.txg.scrabble.model.MessageController;
 
 public class LoginFrame extends JFrame implements ActionListener{
 	
+	public static LoginFrame loginFrame=null;
 	JLabel logo = null;
 	JLabel usernameLabel = null;
 	JLabel ipAddress = null;
@@ -42,6 +43,7 @@ public class LoginFrame extends JFrame implements ActionListener{
 
 	public LoginFrame() {
 		// TODO Auto-generated constructor stub
+		loginFrame=this;
 		logo = new JLabel(new ImageIcon(this.getClass().getResource("/images/logo.png")));
 
 		usernameLabel = new JLabel("username :", JLabel.CENTER);
@@ -111,7 +113,6 @@ public class LoginFrame extends JFrame implements ActionListener{
 		}else if(e.getSource()==login){
 			if(ConnectToServer.socket!=null && ConnectToServer.socket.isConnected()){
 				MessageController controller=new MessageController(ConnectToServer.socket);
-				PlayersList playersList=new PlayersList();
 				controller.start();
 				JSONObject object=new JSONObject();
 				try {
@@ -123,7 +124,6 @@ public class LoginFrame extends JFrame implements ActionListener{
 					e1.printStackTrace();
 				}
 				controller.sendMessage(object);
-				this.dispose();
 			}
 		}
 	}

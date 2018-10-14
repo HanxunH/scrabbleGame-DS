@@ -48,7 +48,7 @@ public class GamePanel extends JPanel implements MouseListener{
 		
 	}
 	public void updateCharacters(Graphics2D g){
-		g.setFont(new Font("Arial", Font.BOLD, 40));
+		g.setFont(new Font("Arial", Font.BOLD, panelSize/16));
 		for(int i=0;i<20;i++){
 			for(int j=0;j<20;j++){
 				g.drawString(characters[i][j]+"", blockSize*i+1, blockSize*(j+1)-1);

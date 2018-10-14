@@ -68,9 +68,16 @@ public class PlayerRoomFrame extends JFrame implements WindowListener,ActionList
 		this.addWindowListener(this);
 	}
 
+	public void clearStatus(){
+		for(int i=0;i<labels.length;i++){
+			labels[i].setText("");
+			states[i].setText("");
+		}
+	}
+		
 	public void updateStatus() {
+		clearStatus();
 		for (int i = 0; i < list.size(); i++) {
-
 			labels[i].setText(list.get(i).getUserName());
 			if (list.get(i).isState()==false) {
 				states[i].setText("UNREADY");				
