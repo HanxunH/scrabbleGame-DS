@@ -52,6 +52,7 @@ public class scrabbleGameServer {
         public int id;
         public int firstWordCount;
         public int secondWordCount;
+        public int totalVoteCount = 0;
         public gameRoom() {
             this.game = new scrabbleGame();
         }
@@ -62,49 +63,39 @@ public class scrabbleGameServer {
             }
         }
 
-        public void connectPlayer(){
+        public void unreadyAllPlayer(){
+            for(int i=0; i<connectedPlayers.size(); i++){
+                connectedPlayers.get(i).isPlayerReady = false;
+            }
+        }
 
+        public void connectPlayer(connectedPlayerClient player){
+            synchronized (this){
+                if(connectedPlayers.size() < maximumPlayersPerGame){
+                    connectedPlayers.add(player);
+                    player.gameRoomObject = this;
+                    player.isInRoom = true;
+                    player.roomID = this.id;
+                }else{
+                    logger.severe("GameRoom connectPlayer: Room Full");
+                }
+            }
         }
 
         public void disconnectPlayer(connectedPlayerClient player){
             synchronized (this){
                 connectedPlayers.remove(player);
-                if(connectedPlayers.size() == 0){
-                    synchronized(gameRoomList){
-                        gameRoomList.remove(this);
-                        updateRoomListToAllPlayers();
-                    }
-                }
+//                if(connectedPlayers.size() == 0){
+//                    synchronized(gameRoomList){
+//                        gameRoomList.remove(this);
+//                        updateRoomListToAllPlayers();
+//                    }
+//                }
                 player.isInRoom = false;
                 player.roomID = 0;
             }
         }
 
-        public void updatePlayerListToPlayers() {
-        	 // TODO: UPDATE playerlist
-        	JSONObject json = new JSONObject();
-            System.out.println("updatePlayerListToPlayers");
-            try {
-                json.put("response_code", 266);
-                JSONArray playerList=new JSONArray();
-                for(int i=0; i < clientList.size(); i++){
-                    JSONObject playerJsonObject = new JSONObject();                    
-                    playerJsonObject.put("player_id", clientList.get(i).userID);
-                    playerJsonObject.put("is_in_room", clientList.get(i).isInRoom);
-                    playerList.put(playerJsonObject);
-                }
-                json.put("player_list", playerList);
-                String responseJSONString = json.toString();
-                for(int i=0; i < clientList.size(); i++){
-                    DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(clientList.get(i).socket.getOutputStream()));
-                    outputStream.writeUTF(responseJSONString);
-                    outputStream.flush();
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        	
-        }
         
         public void updateGameRoomInfoToPlayers(){
             JSONObject json = new JSONObject();
@@ -204,7 +195,6 @@ public class scrabbleGameServer {
     			}    
                 json.put("player_list", playerList);
                 String responseJSONString = json.toString();
-                System.out.println("Here! " + responseJSONString);
                 for(int i=0; i < connectedPlayers.size(); i++){
                     DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(connectedPlayers.get(i).socket.getOutputStream()));
                     outputStream.writeUTF(responseJSONString);
@@ -282,7 +272,7 @@ public class scrabbleGameServer {
                 logger.severe("invitePlayerToRoom: No such user! ID: " + String.valueOf(inviteID));
                 return;
             }
-            json.put("response_code", 250);
+            json.put("response_code", 234);
             json.put("update", true);
             json.put("update_type", "invite");
             json.put("inviter_id", ownerID);
@@ -294,6 +284,36 @@ public class scrabbleGameServer {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public static void updatePlayerListToPlayers() {
+        // TODO: UPDATE playerlist
+        JSONObject json = new JSONObject();
+        System.out.println("updatePlayerListToPlayers");
+        try {
+            json.put("response_code", 220);
+            JSONArray playerList=new JSONArray();
+            for(int i=0; i < clientList.size(); i++){
+                if(clientList.get(i).isLogin == false){
+                    continue;
+                }
+                JSONObject playerJsonObject = new JSONObject();
+                playerJsonObject.put("player_id", clientList.get(i).userID);
+                playerJsonObject.put("player_is_in_room", clientList.get(i).isInRoom);
+                playerJsonObject.put("player_username", clientList.get(i).username);
+                playerList.put(playerJsonObject);
+            }
+            json.put("connected_client_list", playerList);
+            String responseJSONString = json.toString();
+            for(int i=0; i < clientList.size(); i++){
+                DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(clientList.get(i).socket.getOutputStream()));
+                outputStream.writeUTF(responseJSONString);
+                outputStream.flush();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     public static void updateRoomListToAllPlayers(){
@@ -424,7 +444,7 @@ public class scrabbleGameServer {
         public void jsonErrorHandler(String errorMessage, int errorCode, JSONObject json){
             try{
                 json.put("response", false);
-                json.put("response_code", errorCode);
+                json.put("error_code", errorCode);
                 json.put("error_message", errorMessage);
             }catch (Exception e){
                 e.printStackTrace();
@@ -443,10 +463,24 @@ public class scrabbleGameServer {
                         Add a player
                         */
                         if(json.has("player_username")){
-                            clientObject.username = json.getString("player_username");
-                            clientObject.isLogin = true;
-                            responseJson.put("player_id",clientObject.userID);
-                            responseJson.put("response_code", 200);
+                            boolean check = true;
+                            for(int i=0;i<clientList.size();i++){
+                                if(clientList.get(i).isLogin && clientList.get(i).username.equals(json.getString("player_username"))){
+                                    jsonErrorHandler("Username Already Exist!", 404, responseJson);
+                                    check = false;
+                                }
+                            }
+                            if(json.getString("player_username").equals("")){
+                                jsonErrorHandler("Username cannot be Empty!", 404, responseJson);
+                                check = false;
+                            }
+                            if(check){
+                                clientObject.username = json.getString("player_username");
+                                clientObject.isLogin = true;
+                                responseJson.put("player_id",clientObject.userID);
+                                responseJson.put("response_code", 200);
+                                updatePlayerListToPlayers();
+                            }
                         }else{
                             /*
                             No player_username Key
@@ -477,6 +511,7 @@ public class scrabbleGameServer {
                                 responseJson.put("player_is_in_game_room",clientObject.isInRoom);
                                 responseJson.put("response_code", 201);
                                 updateRoomListToAllPlayers();
+                                updatePlayerListToPlayers();
                             }
                         }else{
                             jsonErrorHandler("Unauthorised", 403, responseJson);
@@ -494,6 +529,7 @@ public class scrabbleGameServer {
                                 responseJson.put("response_code", 202);
                                 tempGameRoomObject.updateGameRoomInfoToPlayers();
                                 updateRoomListToAllPlayers();
+                                updatePlayerListToPlayers();
                             }else{
                                 jsonErrorHandler("No such game room!", 404, responseJson);
                             }
@@ -519,6 +555,7 @@ public class scrabbleGameServer {
                                     responseJson.put("response_code", 203);
                                     gameRoom.updateGameRoomInfoToPlayers();
                                     updateRoomListToAllPlayers();
+                                    updatePlayerListToPlayers();
                                 }
                             }else{
                                 jsonErrorHandler("Please provide a game room id!", 404, responseJson);
@@ -564,7 +601,7 @@ public class scrabbleGameServer {
                             			connectedClientStatus.put("player_is_in_room", clientList.get(i).isInRoom);
                             			connectedCilentList.put(connectedClientStatus);
                             		}                            
-                                 responseJson.put("connected_cilent_list", connectedCilentList);                              
+                                 responseJson.put("connected_client_list", connectedCilentList);
                                  responseJson.put("response_code", 220);
                      			}
                      		}else {
@@ -581,11 +618,9 @@ public class scrabbleGameServer {
                      			if(this.clientObject.gameRoomObject.availableSpot() <= 0){
                                     jsonErrorHandler("Room is full!", 405, responseJson);
                      			}else{
-                     			    if(json.has("invite_target_id") && getConnectedPlayerClientObject(json.getInt("invite_target_id"))!= null ){
-                                        connectedPlayerClient invite_target_player = getConnectedPlayerClientObject(json.getInt("invite_target_id"));
-                     			        responseJson.put("invitor_id",this.clientObject.userID);
-                                        responseJson.put("invitor_name",this.clientObject.username);
-                                        responseJson.put("response_code", 234);
+                     			    if(json.has("invitor_id") && getConnectedPlayerClientObject(json.getInt("invitor_id"))!= null ){
+                                        connectedPlayerClient invite_target_player = getConnectedPlayerClientObject(json.getInt("invitor_id"));
+                                        responseJson.put("response_code", 250);
                                         invitePlayerToRoom(invite_target_player.userID, this.clientObject.userID, this.clientObject.roomID);
                                     }else{
                                         jsonErrorHandler("No Such User!", 404, responseJson);
@@ -609,23 +644,29 @@ public class scrabbleGameServer {
                          }                	                   
                     }else if(operationRequestString.equals("INVITEJOIN")){
                    	 //TODO: invite users to join the room
-                   	 	if(json.has("player_id_a") && json.getInt("player_id_a") == clientObject.userID){
-                    		//int roomId = this.clientObject.gameRoomObject.id;
-                    		connectedPlayerClient playerIDA = getConnectedPlayerClientObject(json.getInt("player_id_a"));
-                            connectedPlayerClient playerIDB = getConnectedPlayerClientObject(json.getInt("player_id_b"));
-                            if(playerIDA == null || playerIDB == null){
-                                jsonErrorHandler("No Such user!", 404, responseJson);
+                   	 	if(json.has("player_id_b") && json.getInt("player_id_b") == clientObject.userID){
+                   	 	    if(json.has("accept") && json.getBoolean("accept")) {
+                                //int roomId = this.clientObject.gameRoomObject.id;
+                                connectedPlayerClient playerIDA = getConnectedPlayerClientObject(json.getInt("player_id_a"));
+                                connectedPlayerClient playerIDB = getConnectedPlayerClientObject(json.getInt("player_id_b"));
+                                if(playerIDA == null || playerIDB == null){
+                                    jsonErrorHandler("No Such user!", 404, responseJson);
+                                }else{
+                                    System.out.println(playerIDA.username + playerIDB.username);
+                                    playerIDA.gameRoomObject.connectPlayer(playerIDB);
+                                    playerIDA.gameRoomObject.updateGameRoomInfoToPlayers();
+                                    updateRoomListToAllPlayers();
+                                    updatePlayerListToPlayers();
+                                    responseJson.put("response_code", 235);
+                                }
                             }else{
-                                playerIDA.gameRoomObject.connectedPlayers.add(playerIDB);
-                                //playerIDB.gameRoomObject.id = playerIDA.roomID;
-                                playerIDB.gameRoomObject = playerIDA.gameRoomObject;
-                                playerIDB.isInRoom = true;
-                                playerIDB.gameRoomObject.updateGameRoomInfoToPlayers();
-                                updateRoomListToAllPlayers();
-                                responseJson.put("response_code", 235);
+                   	 	        /* User Decline */
+                   	 	        System.out.print(json.getBoolean("accept"));
                             }
-                    	} 
-                   }else if(operationRequestString.equals("READY")){
+                    	}else{
+                            jsonErrorHandler("Unauthorised", 403, responseJson);
+                        }
+                    }else if(operationRequestString.equals("READY")){
                         if(json.has("player_id") && json.getInt("player_id") == clientObject.userID){
                             this.clientObject.isPlayerReady = true;
                             responseJson.put("player_id",clientObject.userID);
@@ -649,21 +690,6 @@ public class scrabbleGameServer {
                             if(this.clientObject.gameRoomObject.game.isStarted()){
                                 this.clientObject.gameRoomObject.updateGameStateToPlayers();
                             }
-//                    		gameRoom gameRoom = getGameRoomObject(json.getInt("player_room_id"));
-//                    		ArrayList<connectedPlayerClient> connectedPlayers = gameRoom.connectedPlayers;
-//                    		if(connectedPlayers.size()>1) {
-//                    			int readyClient = 0;
-//                    			for(int i=0;i<connectedPlayers.size();i++) {
-//                    				if(connectedPlayers.get(i).isPlayerReady)
-//                    					readyClient += 1;
-//                    				else {
-//                    					break;
-//                    				}
-//                    			}
-//                    			if(readyClient == connectedPlayers.size())
-//                    				gameRoom.roomIsGameStarted = true; //game start
-//                        		jsonMap.put("is_game_start",String.valueOf(gameRoom.roomIsGameStarted));
-//                    		}
                     	}else{
                             jsonErrorHandler("Unauthorised", 403, responseJson);
                         }                                   	
@@ -685,11 +711,14 @@ public class scrabbleGameServer {
                     			int row = json.getInt("row");
                     			String c = json.getString("character");
                     			char character = c.charAt(0);
-                    			ArrayList<String> list = gameRoom.game.playerAddCharacter(column, row, character, this.clientObject.userID);                    		    
-                    			gameRoom.updateGameStateToPlayers();
-                                gameRoom.firstWordCount = 0;
-                    			gameRoom.secondWordCount = 0;
-                                gameRoom.askPlayersToVote(list, this.clientObject.userID);
+                    			ArrayList<String> list = gameRoom.game.playerAddCharacter(column, row, character, this.clientObject.userID);
+                                synchronized (gameRoom) {
+                                    gameRoom.updateGameStateToPlayers();
+                                    gameRoom.firstWordCount = 0;
+                                    gameRoom.secondWordCount = 0;
+                                    gameRoom.totalVoteCount = 0;
+                                    gameRoom.askPlayersToVote(list, this.clientObject.userID);
+                                }
                                 responseJson.put("response_code", 207);
                             }else {
                     			jsonErrorHandler("game is not started", 407, responseJson);
@@ -704,6 +733,14 @@ public class scrabbleGameServer {
                                 gameRoom.game.playerPassThisTurn(this.clientObject.userID);
                                 gameRoom.updateGameStateToPlayers();
                                 responseJson.put("response_code", 208);
+                                if(gameRoom.game.isFinished){
+                                    System.out.println(gameRoom.game.isFinished);
+                                    gameRoom.unreadyAllPlayer();
+                                    gameRoom.updateGameRoomInfoToPlayers();
+                                    gameRoom.game = new scrabbleGame();
+                                }else{
+                                    System.out.println(gameRoom.game.isFinished);
+                                }
                             }else {
                                 jsonErrorHandler("game is not started", 407, responseJson);
                             }
@@ -720,22 +757,28 @@ public class scrabbleGameServer {
                                  int wordOwnerPlayerID = json.getInt("vote_owner_id");
                                  Boolean firstWord = json.getBoolean("first_word");
                                  Boolean secondWord = json.getBoolean("second_word");
-                                 if(firstWord)
-                                    gameRoom.firstWordCount++;
-                                 if(secondWord)
-                                    gameRoom.secondWordCount++;
-                                 if(gameRoom.firstWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()-1 && gameRoom.secondWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()-1) {
-                                    if(word1.length() >= word2.length()) {
-                                        this.clientObject.gameRoomObject.game.approveWord(word1, wordOwnerPlayerID);
-                                    }else {
-                                        this.clientObject.gameRoomObject.game.approveWord(word2, wordOwnerPlayerID);
-                                    }                       
-                                 }else if(gameRoom.firstWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()-1 && gameRoom.secondWordCount != this.clientObject.gameRoomObject.connectedPlayers.size()-1){
-                                    this.clientObject.gameRoomObject.game.approveWord(word1, wordOwnerPlayerID);
-                                 }else if(gameRoom.firstWordCount != this.clientObject.gameRoomObject.connectedPlayers.size()-1 && gameRoom.secondWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()-1) {
-                                    this.clientObject.gameRoomObject.game.approveWord(word2, wordOwnerPlayerID);
-                                 }         
-                                 gameRoom.updateGameStateToPlayers();
+                                 synchronized (gameRoom) {
+                                     gameRoom.totalVoteCount++;
+                                     if (gameRoom.totalVoteCount >= gameRoom.connectedPlayers.size()) {
+                                         gameRoom.game.incrementTheTurn();
+                                     }
+                                     if (firstWord)
+                                         gameRoom.firstWordCount++;
+                                     if (secondWord)
+                                         gameRoom.secondWordCount++;
+                                     if (gameRoom.firstWordCount == this.clientObject.gameRoomObject.connectedPlayers.size() && gameRoom.secondWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()) {
+                                         if (word1.length() >= word2.length()) {
+                                             this.clientObject.gameRoomObject.game.approveWord(word1, wordOwnerPlayerID);
+                                         } else {
+                                             this.clientObject.gameRoomObject.game.approveWord(word2, wordOwnerPlayerID);
+                                         }
+                                     } else if (gameRoom.firstWordCount == this.clientObject.gameRoomObject.connectedPlayers.size() && gameRoom.secondWordCount != this.clientObject.gameRoomObject.connectedPlayers.size()) {
+                                         this.clientObject.gameRoomObject.game.approveWord(word1, wordOwnerPlayerID);
+                                     } else if (gameRoom.firstWordCount != this.clientObject.gameRoomObject.connectedPlayers.size() && gameRoom.secondWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()) {
+                                         this.clientObject.gameRoomObject.game.approveWord(word2, wordOwnerPlayerID);
+                                     }
+                                     gameRoom.updateGameStateToPlayers();
+                                 }
                                  responseJson.put("response_code", 299);
                              }else {
                                  jsonErrorHandler("game is not started", 407, responseJson);
@@ -743,6 +786,30 @@ public class scrabbleGameServer {
                     	}else{
                             jsonErrorHandler("Unauthorised", 403, responseJson);
                         } 
+                    }else if(operationRequestString.equals("QUITGAME")){
+                        if(json.has("player_id") && json.getInt("player_id") == clientObject.userID) {
+                            if(clientObject.gameRoomObject.game.isStarted){
+                                clientObject.gameRoomObject.game.stopTheGame();
+                                clientObject.gameRoomObject.disconnectPlayer(clientObject);
+                                clientObject.gameRoomObject.updateGameStateToPlayers();
+                                gameRoom tempGameRoomObject = clientObject.gameRoomObject;
+                                clientObject.gameRoomObject = null;
+                                clientObject.isInRoom = false;
+                                clientObject.isPlayerReady = false;
+                                tempGameRoomObject.unreadyAllPlayer();
+                                tempGameRoomObject.game = new scrabbleGame();
+
+                                tempGameRoomObject.updateGameRoomInfoToPlayers();
+                                updatePlayerListToPlayers();
+                                updateRoomListToAllPlayers();
+
+                                responseJson.put("response_code", 330);
+                            }else{
+                                jsonErrorHandler("game is not started", 407, responseJson);
+                            }
+                        }else {
+                            jsonErrorHandler("Unauthorised", 403, responseJson);
+                        }
                     }else{
                         jsonErrorHandler("Operation Not Implemented", 501, responseJson);
                     }
@@ -802,13 +869,26 @@ public class scrabbleGameServer {
                 logger.severe(e.getMessage());
 
                 /* Disconnect */
+                if(clientObject.isInRoom || clientObject.gameRoomObject != null){
+                    clientObject.gameRoomObject.disconnectPlayer(this.clientObject);
+                    if(this.clientObject.gameRoomObject.game.isStarted){
+                        clientObject.gameRoomObject.game.stopTheGame();
+                        clientObject.gameRoomObject.updateGameStateToPlayers();
+                    }
+                    gameRoom tempGameRoomObject = clientObject.gameRoomObject;
+                    clientObject.gameRoomObject = null;
+                    clientObject.isInRoom = false;
+                    clientObject.isPlayerReady = false;
+                    tempGameRoomObject.unreadyAllPlayer();
+                    tempGameRoomObject.game = new scrabbleGame();
+                    tempGameRoomObject.updateGameRoomInfoToPlayers();
+                    updateRoomListToAllPlayers();
+                }
                 synchronized (clientList){
                     clientList.remove(this.clientObject);
                 }
                 decrementClientCounter();
-                if(clientObject.isInRoom || clientObject.gameRoomObject != null){
-                    clientObject.gameRoomObject.disconnectPlayer(this.clientObject);
-                }
+                updatePlayerListToPlayers();
                 logger.info("Remove player ID: " + String.valueOf(this.clientObject.userID));
             }
 

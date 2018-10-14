@@ -160,7 +160,7 @@ public class scrabbleGame {
         player.setScore(score);
     }
 
-    private void incrementTheTurn(){
+    public void incrementTheTurn(){
         if(this.nextActionUserID + 1 < this.playerList.size()){
             this.nextActionUserID = this.nextActionUserID + 1;
         }else{
@@ -185,6 +185,7 @@ public class scrabbleGame {
             throw new scrabbleGameException("Not Enough Players");
         }
         this.isStarted = true;
+        this.isFinished = false;
         this.nextActionUserID = this.playerList.get(0).getUserID();
     }
 
@@ -217,7 +218,7 @@ public class scrabbleGame {
         }
         player.lastAction = gameAction.ADD;
         /* Update the turn */
-        this.incrementTheTurn();
+//        this.incrementTheTurn();
         ArrayList<String> temp = this.getListOfWordsFromGameState(column,row);
         /* For the Demo */
         int maxScore = 0;
@@ -277,6 +278,7 @@ public class scrabbleGame {
 
     public void stopTheGame(){
         this.isStarted = false;
+        this.isFinished = true;
     }
 
     public static void main(String args[]){
