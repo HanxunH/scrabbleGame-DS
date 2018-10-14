@@ -13,12 +13,15 @@ import com.txg.scrabble.config.Config;
 import com.txg.scrabble.domain.Room;
 import com.txg.scrabble.domain.User;
 import com.txg.scrabble.view.GameView;
+import com.txg.scrabble.view.LoginFrame;
 import com.txg.scrabble.view.PlayerRoomFrame;
 import com.txg.scrabble.view.PlayersList;
 
 public class DataOperations {
 
 	public void RAddPlayer(JSONObject object) {
+		LoginFrame.loginFrame.dispose();
+		PlayersList playersList=new PlayersList();
 		JSONObject listRoom = new JSONObject();
 		try {
 			Config.user.setId(object.getInt("player_id"));
@@ -48,14 +51,6 @@ public class DataOperations {
 				roomList.add(room.getRoomId()+"     "+room.getRoomAvaliableSpot()+"'s left     "+room.isRoomIsGameStarted());
 			}
 			PlayersList.list_1.setListData(roomList);
-			JSONObject listPlayer=new JSONObject();
-			try {
-				listPlayer.put("operation", "LISTCLIENTS");
-				listPlayer.put("player_id", Config.user.getId());
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-			MessageController.controller.sendMessage(listPlayer);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -79,7 +74,7 @@ public class DataOperations {
 		JSONObject reply=new JSONObject();
 		// A invites B
 		try {
-			int invitorId=object.getInt("invitor_id");
+			int invitorId=object.getInt("inviter_id");
 			int result=JOptionPane.showConfirmDialog(null, invitorId+" invites you to game !", "Invitation",JOptionPane.YES_NO_OPTION);
 			reply.put("operation", "INVITEJOIN");
 			reply.put("player_id_b", Config.user.getId());
@@ -87,6 +82,7 @@ public class DataOperations {
 			if (result==0) {
 				//YES
 				reply.put("accept", true);
+				PlayerRoomFrame frame = new PlayerRoomFrame();
 			}else{
 				//NO
 				reply.put("accept", false);
@@ -101,7 +97,7 @@ public class DataOperations {
 	public void RUpdatePlayerInRoom(JSONObject object) {
 		// TODO Auto-generated method stub
 		JSONArray array;
-		PlayerRoomFrame.playerRoomFrame.list.clear();
+		PlayerRoomFrame.playerRoomFrame.list.removeAll(PlayerRoomFrame.playerRoomFrame.list);
 		try {
 			array = object.getJSONArray("player_list");
 			for(int i=0;i<array.length();i++){
@@ -111,6 +107,13 @@ public class DataOperations {
 				user.setScore(temp.getInt("score"));
 				user.setUserName(temp.getString("player_username"));
 				user.setState(temp.getBoolean("is_ready"));
+				if (user.getId()==Config.user.getId()) {
+					if(temp.getBoolean("is_ready")){
+						PlayerRoomFrame.playerRoomFrame.button.setText("UNREADY");
+					}else{
+						PlayerRoomFrame.playerRoomFrame.button.setText("READY");
+					}					
+				}
 				PlayerRoomFrame.playerRoomFrame.list.add(user);
 			}
 			PlayerRoomFrame.playerRoomFrame.updateStatus();
@@ -139,6 +142,7 @@ public class DataOperations {
 		ArrayList<User> list=new ArrayList<User>();
 		char[][] characters=new char[20][20];
 		int maxScore=0;
+		boolean flag=false;
 		String winner="";
 		try {
 			JSONArray playerList=object.getJSONArray("player_list");
@@ -153,12 +157,17 @@ public class DataOperations {
 					maxScore=temp.getInt("player_score");
 					winner=temp.getString("player_username");
 				}
+				if (temp.getInt("player_id")==Config.user.getId()) {
+					flag=true;
+				}
 			}
-			if (object.getBoolean("is_started")==false) {
-				Config.gameStartClick=true;
-				JOptionPane.showMessageDialog(null, "Game Over, the winner is "+winner);
-				GameView.gameView.dispose();
-				return;
+			if (flag==true) {
+				if (object.getBoolean("is_started")==false) {
+					Config.gameStartClick=true;
+					JOptionPane.showMessageDialog(null, "Game Over, the winner is "+winner);
+					GameView.gameView.dispose();
+					return;
+				}				
 			}
 			if (Config.gameStartClick==true) {
 				GameView gameView=new GameView(list);	
@@ -202,10 +211,11 @@ public class DataOperations {
 				JSONObject temp = array.getJSONObject(i);
 				int id=temp.getInt("player_id");
 				boolean inRoom=temp.getBoolean("player_is_in_room");
+				String username=temp.getString("player_username");
 				if (inRoom==true) {
-					playerList.add(id+"     UNAVAILABLE");
+					playerList.add(id+"     "+username+"     UNAVAILABLE");
 				}else{
-					playerList.add(id+"       AVAILABLE");					
+					playerList.add(id+"     "+username+"       AVAILABLE");					
 				}
 			}
 			PlayersList.list.setListData(playerList);
