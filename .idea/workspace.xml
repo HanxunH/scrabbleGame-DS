@@ -8,12 +8,6 @@
   <component name="ChangeListManager">
     <list default="true" id="e67f79ac-55cd-48d9-baf2-722d196ecd46" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/project2_jar/project2.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/project2_jar/project2.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/project2/scrabbleGame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/scrabbleGame.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer$clientHandlerThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer$clientHandlerThread.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer$gameRoom.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer$gameRoom.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/project2/scrabbleGameServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scrabbleGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/scrabbleGame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/scrabbleGameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/scrabbleGameServer.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -41,7 +35,7 @@
     <session id="682117568">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="19" />
+          <entry key="project.closed" value="20" />
           <entry key="project.open.time.1" value="2" />
           <entry key="project.open.time.10" value="5" />
           <entry key="project.open.time.11" value="1" />
@@ -52,8 +46,8 @@
           <entry key="project.open.time.18" value="1" />
           <entry key="project.open.time.2" value="2" />
           <entry key="project.open.time.7" value="1" />
-          <entry key="project.open.time.9" value="2" />
-          <entry key="project.opened" value="20" />
+          <entry key="project.open.time.9" value="3" />
+          <entry key="project.opened" value="21" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -73,13 +67,13 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="17004" />
+          <entry key="java" value="17622" />
           <entry key="json" value="535" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="17004" />
+          <entry key="JAVA" value="17622" />
           <entry key="JSON" value="535" />
         </counts>
       </usages-collector>
@@ -90,8 +84,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/scrabbleGame.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="175">
-              <caret line="220" column="25" selection-start-line="220" selection-end-line="221" />
+            <state relative-caret-position="-535">
+              <caret line="29" column="33" lean-forward="true" selection-start-line="29" selection-start-column="33" selection-end-line="29" selection-end-column="33" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="imports" expanded="true" />
@@ -103,13 +97,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/scrabbleGameServer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="295">
-              <caret line="761" column="66" selection-start-line="761" selection-start-column="66" selection-end-line="761" selection-end-column="66" />
+            <state relative-caret-position="314">
+              <caret line="909" column="27" selection-start-line="909" selection-start-column="27" selection-end-line="909" selection-end-column="27" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="imports" expanded="true" />
-                <element signature="e#15018#15019#0" expanded="true" />
-                <element signature="e#15057#15058#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -199,7 +191,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -212,13 +204,13 @@
           <select />
         </subPane>
       </pane>
-      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1539502740310" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1539503220698" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Artifacts" />
@@ -358,12 +350,13 @@
       <workItem from="1538548322481" duration="1547000" />
       <workItem from="1538568523275" duration="908000" />
       <workItem from="1538607774269" duration="1114000" />
-      <workItem from="1539427521010" duration="18224000" />
+      <workItem from="1539427521010" duration="18934000" />
+      <workItem from="1539516338816" duration="615000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="95008000" />
+    <option name="totallyTimeSpent" value="96333000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -378,7 +371,7 @@
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49608356" visible="true" weight="0.18803419" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49608356" visible="true" weight="0.1898657" />
       <window_info id="Structure" order="1" sideWeight="0.50391644" side_tool="true" weight="0.18070818" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -387,7 +380,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.26632652" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.26632652" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -413,18 +406,6 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/scrabbleGameServer.java</url>
-          <line>128</line>
-          <properties />
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
@@ -521,11 +502,12 @@
           <nodes />
           <notes />
           <edges />
-          <settings layout="Hierarchic Group" zoom="1.0" x="665.0" y="408.5" />
+          <settings layout="Hierarchic Group" zoom="1.0" x="665.0" y="409.0" />
           <SelectedNodes />
           <Categories>
             <Category>All</Category>
           </Categories>
+          <SCOPE>All</SCOPE>
           <VISIBILITY>Details</VISIBILITY>
         </state>
       </provider>
@@ -572,8 +554,8 @@
           <settings layout="Hierarchic Group" zoom="1.0" x="-74.0" y="217.0" />
           <SelectedNodes />
           <Categories>
-            <Category>Constructors</Category>
             <Category>Fields</Category>
+            <Category>Constructors</Category>
             <Category>Properties</Category>
           </Categories>
           <SCOPE>All</SCOPE>
@@ -590,8 +572,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scrabbleGame.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="220" column="25" selection-start-line="220" selection-end-line="221" />
+        <state relative-caret-position="-535">
+          <caret line="29" column="33" lean-forward="true" selection-start-line="29" selection-start-column="33" selection-end-line="29" selection-end-column="33" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
@@ -601,13 +583,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scrabbleGameServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="295">
-          <caret line="761" column="66" selection-start-line="761" selection-start-column="66" selection-end-line="761" selection-end-column="66" />
+        <state relative-caret-position="314">
+          <caret line="909" column="27" selection-start-line="909" selection-start-column="27" selection-end-line="909" selection-end-column="27" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#15018#15019#0" expanded="true" />
-            <element signature="e#15057#15058#0" expanded="true" />
           </folding>
         </state>
       </provider>
