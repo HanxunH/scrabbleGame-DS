@@ -160,7 +160,7 @@ public class scrabbleGame {
         player.setScore(score);
     }
 
-    private void incrementTheTurn(){
+    public void incrementTheTurn(){
         if(this.nextActionUserID + 1 < this.playerList.size()){
             this.nextActionUserID = this.nextActionUserID + 1;
         }else{
@@ -218,7 +218,7 @@ public class scrabbleGame {
         }
         player.lastAction = gameAction.ADD;
         /* Update the turn */
-        this.incrementTheTurn();
+//        this.incrementTheTurn();
         ArrayList<String> temp = this.getListOfWordsFromGameState(column,row);
         /* For the Demo */
         int maxScore = 0;

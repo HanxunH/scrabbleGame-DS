@@ -52,6 +52,7 @@ public class scrabbleGameServer {
         public int id;
         public int firstWordCount;
         public int secondWordCount;
+        public int totalVoteCount = 0;
         public gameRoom() {
             this.game = new scrabbleGame();
         }
@@ -710,11 +711,14 @@ public class scrabbleGameServer {
                     			int row = json.getInt("row");
                     			String c = json.getString("character");
                     			char character = c.charAt(0);
-                    			ArrayList<String> list = gameRoom.game.playerAddCharacter(column, row, character, this.clientObject.userID);                    		    
-                    			gameRoom.updateGameStateToPlayers();
-                                gameRoom.firstWordCount = 0;
-                    			gameRoom.secondWordCount = 0;
-                                gameRoom.askPlayersToVote(list, this.clientObject.userID);
+                    			ArrayList<String> list = gameRoom.game.playerAddCharacter(column, row, character, this.clientObject.userID);
+                                synchronized (gameRoom) {
+                                    gameRoom.updateGameStateToPlayers();
+                                    gameRoom.firstWordCount = 0;
+                                    gameRoom.secondWordCount = 0;
+                                    gameRoom.totalVoteCount = 0;
+                                    gameRoom.askPlayersToVote(list, this.clientObject.userID);
+                                }
                                 responseJson.put("response_code", 207);
                             }else {
                     			jsonErrorHandler("game is not started", 407, responseJson);
@@ -753,22 +757,28 @@ public class scrabbleGameServer {
                                  int wordOwnerPlayerID = json.getInt("vote_owner_id");
                                  Boolean firstWord = json.getBoolean("first_word");
                                  Boolean secondWord = json.getBoolean("second_word");
-                                 if(firstWord)
-                                    gameRoom.firstWordCount++;
-                                 if(secondWord)
-                                    gameRoom.secondWordCount++;
-                                 if(gameRoom.firstWordCount == this.clientObject.gameRoomObject.connectedPlayers.size() && gameRoom.secondWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()) {
-                                    if(word1.length() >= word2.length()) {
-                                        this.clientObject.gameRoomObject.game.approveWord(word1, wordOwnerPlayerID);
-                                    }else {
-                                        this.clientObject.gameRoomObject.game.approveWord(word2, wordOwnerPlayerID);
-                                    }                       
-                                 }else if(gameRoom.firstWordCount == this.clientObject.gameRoomObject.connectedPlayers.size() && gameRoom.secondWordCount != this.clientObject.gameRoomObject.connectedPlayers.size()){
-                                    this.clientObject.gameRoomObject.game.approveWord(word1, wordOwnerPlayerID);
-                                 }else if(gameRoom.firstWordCount != this.clientObject.gameRoomObject.connectedPlayers.size() && gameRoom.secondWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()) {
-                                    this.clientObject.gameRoomObject.game.approveWord(word2, wordOwnerPlayerID);
-                                 }         
-                                 gameRoom.updateGameStateToPlayers();
+                                 synchronized (gameRoom) {
+                                     gameRoom.totalVoteCount++;
+                                     if (gameRoom.totalVoteCount >= gameRoom.connectedPlayers.size()) {
+                                         gameRoom.game.incrementTheTurn();
+                                     }
+                                     if (firstWord)
+                                         gameRoom.firstWordCount++;
+                                     if (secondWord)
+                                         gameRoom.secondWordCount++;
+                                     if (gameRoom.firstWordCount == this.clientObject.gameRoomObject.connectedPlayers.size() && gameRoom.secondWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()) {
+                                         if (word1.length() >= word2.length()) {
+                                             this.clientObject.gameRoomObject.game.approveWord(word1, wordOwnerPlayerID);
+                                         } else {
+                                             this.clientObject.gameRoomObject.game.approveWord(word2, wordOwnerPlayerID);
+                                         }
+                                     } else if (gameRoom.firstWordCount == this.clientObject.gameRoomObject.connectedPlayers.size() && gameRoom.secondWordCount != this.clientObject.gameRoomObject.connectedPlayers.size()) {
+                                         this.clientObject.gameRoomObject.game.approveWord(word1, wordOwnerPlayerID);
+                                     } else if (gameRoom.firstWordCount != this.clientObject.gameRoomObject.connectedPlayers.size() && gameRoom.secondWordCount == this.clientObject.gameRoomObject.connectedPlayers.size()) {
+                                         this.clientObject.gameRoomObject.game.approveWord(word2, wordOwnerPlayerID);
+                                     }
+                                     gameRoom.updateGameStateToPlayers();
+                                 }
                                  responseJson.put("response_code", 299);
                              }else {
                                  jsonErrorHandler("game is not started", 407, responseJson);
