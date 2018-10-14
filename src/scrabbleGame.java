@@ -185,6 +185,7 @@ public class scrabbleGame {
             throw new scrabbleGameException("Not Enough Players");
         }
         this.isStarted = true;
+        this.isFinished = false;
         this.nextActionUserID = this.playerList.get(0).getUserID();
     }
 
@@ -277,6 +278,7 @@ public class scrabbleGame {
 
     public void stopTheGame(){
         this.isStarted = false;
+        this.isFinished = true;
     }
 
     public static void main(String args[]){
